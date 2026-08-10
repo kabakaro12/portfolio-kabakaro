@@ -81,3 +81,8 @@ footer{max-width:var(--max);margin:auto;padding:30px 24px 50px;border-top:1px so
 .tech-logo-grid span{font-size:10px;color:var(--muted);text-align:center}
 @media(max-width:900px){.tech-logo-grid{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:600px){.tech-logo-grid{grid-template-columns:repeat(2,1fr)}}
+
+.projects-grid-v6{grid-template-columns:repeat(2,1fr)}
+.projects-grid-v6 .project-card{min-height:310px;grid-column:auto!important;grid-row:auto!important}
+.projects-grid-v6 .featured{min-height:310px}
+@media(max-width:900px){.projects-grid-v6{grid-template-columns:1fr}}
