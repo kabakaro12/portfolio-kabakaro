@@ -81,3 +81,41 @@ footer{max-width:var(--max);margin:auto;padding:30px 24px 50px;border-top:1px so
 .tech-logo-grid span{font-size:10px;color:var(--muted);text-align:center}
 @media(max-width:900px){.tech-logo-grid{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:600px){.tech-logo-grid{grid-template-columns:repeat(2,1fr)}}
+
+.projects-grid-v6{grid-template-columns:repeat(2,1fr)}
+.projects-grid-v6 .project-card{min-height:310px;grid-column:auto!important;grid-row:auto!important}
+.projects-grid-v6 .featured{min-height:310px}
+@media(max-width:900px){.projects-grid-v6{grid-template-columns:1fr}}
+
+.passions-grid .skill-card{min-height:unset}
+.passions-grid .skill-card .icon{font-size:18px}
+
+/* Correctif cartes projets : évite le chevauchement numéro / catégorie et les titres coupés */
+.projects-grid-v6 .project-card{
+  justify-content:flex-start;
+  padding-top:82px;
+}
+.projects-grid-v6 .project-card .project-number{
+  top:26px;
+}
+.projects-grid-v6 .project-card .project-type{
+  margin-bottom:8px;
+  line-height:1.45;
+}
+.projects-grid-v6 .project-card h3{
+  overflow-wrap:anywhere;
+  word-break:break-word;
+  line-height:1.08;
+}
+@media(max-width:600px){
+  .projects-grid-v6 .project-card{
+    padding:78px 24px 28px;
+  }
+  .projects-grid-v6 .project-card .project-number{
+    top:24px;
+    left:24px;
+  }
+  .projects-grid-v6 .project-card h3{
+    font-size:clamp(25px,8vw,32px);
+  }
+}
