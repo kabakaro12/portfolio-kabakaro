@@ -69,3 +69,15 @@ footer{max-width:var(--max);margin:auto;padding:30px 24px 50px;border-top:1px so
   object-fit:cover;
   object-position:center 20%;
 }
+
+.cv-btn{border:1px solid rgba(49,208,170,.45);color:var(--accent);background:rgba(49,208,170,.06)}
+.cv-btn:hover{background:rgba(49,208,170,.12)}
+.github-profile-link{display:inline-block;margin-top:16px;color:var(--accent);font-size:13px;font-weight:700}
+.tech-strip{padding-top:20px}
+.tech-logo-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:11px}
+.tech-logo-grid div{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:112px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.022);transition:.2s}
+.tech-logo-grid div:hover{transform:translateY(-4px);border-color:rgba(49,208,170,.35)}
+.tech-logo-grid b{display:grid;place-items:center;width:46px;height:46px;border-radius:12px;background:rgba(49,208,170,.09);color:var(--accent);font-family:"Space Grotesk";font-size:15px}
+.tech-logo-grid span{font-size:10px;color:var(--muted);text-align:center}
+@media(max-width:900px){.tech-logo-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:600px){.tech-logo-grid{grid-template-columns:repeat(2,1fr)}}

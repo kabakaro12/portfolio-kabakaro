@@ -44,3 +44,11 @@ Dépôts publics intégrés :
 - ProjetStageDevFullStack
 - CINELAND
 - Gestion-de-cineland
+
+## V5
+- CV PDF téléchargeable
+- SEO / Open Graph / Schema.org
+- robots.txt + sitemap.xml
+- favicon
+- section technologies
+- CTA GitHub amélioré
