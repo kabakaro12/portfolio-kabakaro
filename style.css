@@ -119,3 +119,20 @@ footer{max-width:var(--max);margin:auto;padding:30px 24px 50px;border-top:1px so
     font-size:clamp(25px,8vw,32px);
   }
 }
+
+
+/* Services commerciaux */
+.services-intro{color:var(--muted);font-size:17px;max-width:760px;margin-top:16px}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.service-card{border:1px solid var(--border);border-radius:18px;padding:30px;background:linear-gradient(145deg,#0f1d31,#0b1728);display:flex;flex-direction:column;min-height:460px}
+.featured-service{border-color:rgba(49,208,170,.42);box-shadow:0 20px 50px rgba(0,0,0,.22);transform:translateY(-8px)}
+.service-kicker{font-size:10px;letter-spacing:.16em;color:var(--accent);font-weight:800}
+.service-card h3{font-size:28px;margin:10px 0 2px}
+.service-price{color:var(--muted);margin-bottom:22px}.service-price strong{color:#fff;font-size:24px}
+.service-card ul{list-style:none;display:grid;gap:12px;margin-bottom:28px;color:#b6c4d7;font-size:13px;flex:1}
+.service-card li{position:relative;padding-left:23px}.service-card li:before{content:'✓';position:absolute;left:0;color:var(--accent);font-weight:800}
+.service-btn{width:100%}
+.services-cta{margin-top:28px;border:1px solid rgba(49,208,170,.24);border-radius:18px;padding:28px;display:flex;align-items:center;justify-content:space-between;gap:24px;background:rgba(49,208,170,.045)}
+.services-cta h3{font-size:22px;max-width:680px}
+@media(max-width:900px){.services-grid{grid-template-columns:1fr}.featured-service{transform:none}.services-cta{flex-direction:column;align-items:flex-start}}
+@media(max-width:600px){.service-card{min-height:auto;padding:24px}.services-cta{padding:22px}.services-cta .btn{width:100%}}
