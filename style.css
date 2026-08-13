@@ -138,12 +138,138 @@ footer{max-width:var(--max);margin:auto;padding:30px 24px 50px;border-top:1px so
 @media(max-width:600px){.service-card{min-height:auto;padding:24px}.services-cta{padding:22px}.services-cta .btn{width:100%}}
 
 
-/* ===== v12 : orientation commerciale ===== */
-.trust-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}.trust-row span{font-size:12px;color:#c5d1df;border:1px solid var(--border);border-radius:999px;padding:7px 11px;background:rgba(255,255,255,.025)}
-.client-card{background:linear-gradient(145deg,#101f35,#0b1626);border:1px solid var(--border);border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.35);padding:28px}.client-card h3{font-size:30px;line-height:1.15;margin:8px 0 22px}.client-steps{display:grid;gap:11px;margin-bottom:24px}.client-steps div{display:flex;gap:14px;align-items:center;padding:13px 14px;border:1px solid var(--border);border-radius:11px;background:rgba(255,255,255,.018)}.client-steps b{color:var(--accent);font-family:"Space Grotesk"}.client-steps span{font-size:13px;color:#c0ccdc}
-.value-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.value-card{padding:26px;border:1px solid var(--border);border-radius:16px;background:rgba(255,255,255,.02)}.value-card>span{color:var(--accent);font:700 12px "Space Grotesk"}.value-card h3{font-size:19px;margin:24px 0 9px}.value-card p{color:var(--muted);font-size:13px}
-.process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.process-card{position:relative;padding:28px 24px;border-top:2px solid var(--accent);background:rgba(255,255,255,.02);min-height:240px}.process-card strong{font:700 34px "Space Grotesk";color:rgba(49,208,170,.28)}.process-card h3{font-size:21px;margin:26px 0 8px}.process-card p{color:var(--muted);font-size:13px}
-.faq-list{display:grid;gap:10px;max-width:900px}.faq-list details{border:1px solid var(--border);border-radius:13px;background:#0d1a2c;padding:0 20px}.faq-list summary{cursor:pointer;list-style:none;font-weight:700;padding:19px 0}.faq-list summary::-webkit-details-marker{display:none}.faq-list summary:after{content:'+';float:right;color:var(--accent);font-size:20px}.faq-list details[open] summary:after{content:'−'}.faq-list details p{color:var(--muted);font-size:14px;padding:0 0 20px;max-width:780px}
-.whatsapp-float{position:fixed;right:22px;bottom:22px;z-index:120;display:flex;align-items:center;justify-content:center;padding:12px 17px;border-radius:999px;background:var(--accent);color:#03261e;font-size:13px;font-weight:800;box-shadow:0 14px 40px rgba(0,0,0,.35);transition:.2s}.whatsapp-float:hover{transform:translateY(-3px)}
-@media(max-width:1000px){.value-grid,.process-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.value-grid,.process-grid{grid-template-columns:1fr}.process-card{min-height:auto}.trust-row{gap:7px}.trust-row span{font-size:10px}.client-card{padding:22px}.client-card h3{font-size:25px}.whatsapp-float{right:14px;bottom:14px;padding:11px 14px}.whatsapp-float span{font-size:12px}}
+/* V12 — G-Transport phare + prise de rendez-vous */
+.appointment-btn{
+  border:1px solid rgba(49,208,170,.55);
+  background:linear-gradient(135deg,rgba(49,208,170,.18),rgba(49,208,170,.08));
+  color:#8df3d5;
+}
+.flagship-project{
+  border-color:rgba(49,208,170,.38);
+  background:
+    radial-gradient(circle at 85% 15%,rgba(49,208,170,.13),transparent 28%),
+    linear-gradient(145deg,#102338,#0a1728);
+}
+.project-status{
+  display:inline-flex;
+  width:max-content;
+  margin-bottom:12px;
+  padding:7px 10px;
+  border-radius:999px;
+  background:rgba(49,208,170,.1);
+  border:1px solid rgba(49,208,170,.25);
+  color:var(--accent);
+  font-size:9px;
+  letter-spacing:.12em;
+  font-weight:800;
+}
+.appointment-section{
+  background:
+    radial-gradient(circle at 15% 20%,rgba(49,208,170,.08),transparent 28%),
+    #081421;
+}
+.appointment-layout{
+  display:grid;
+  grid-template-columns:.85fr 1.15fr;
+  gap:24px;
+  align-items:start;
+}
+.appointment-info,.booking-card{
+  border:1px solid var(--border);
+  border-radius:20px;
+  background:linear-gradient(145deg,#0f1d31,#0a1727);
+  padding:32px;
+}
+.appointment-kicker{
+  color:var(--accent);
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.15em;
+}
+.appointment-info h3{
+  font-size:30px;
+  line-height:1.08;
+  margin:14px 0;
+}
+.appointment-info>p{color:var(--muted)}
+.appointment-benefits{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:25px 0;
+  color:#bdd0df;
+  font-size:13px;
+}
+.ai-preview{
+  margin-top:28px;
+  border:1px solid rgba(49,208,170,.22);
+  border-radius:14px;
+  padding:18px;
+  background:rgba(49,208,170,.045);
+}
+.ai-preview span{
+  color:var(--accent);
+  font-size:9px;
+  letter-spacing:.14em;
+  font-weight:800;
+}
+.ai-preview strong{display:block;margin:5px 0}
+.ai-preview p{color:var(--muted);font-size:12px;margin:0}
+.booking-card label{
+  display:block;
+  color:#dce8f2;
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:14px;
+}
+.booking-card input,.booking-card select,.booking-card textarea{
+  width:100%;
+  margin-top:7px;
+  border:1px solid var(--border);
+  background:#081421;
+  color:#fff;
+  border-radius:10px;
+  padding:13px 14px;
+  font:inherit;
+}
+.booking-step{margin-bottom:18px}
+.slots{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:9px;
+  margin-top:8px;
+}
+.slot{
+  border:1px solid var(--border);
+  background:#0a1727;
+  color:#b9c9d8;
+  border-radius:11px;
+  padding:12px 7px;
+  cursor:pointer;
+  font:inherit;
+  font-size:11px;
+}
+.slot strong{font-size:14px;color:#fff}
+.slot:hover,.slot.selected{
+  border-color:var(--accent);
+  background:rgba(49,208,170,.1);
+  color:var(--accent);
+}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.full-width{width:100%}
+.booking-note{
+  margin:12px 0 0;
+  color:var(--muted);
+  font-size:10px;
+  text-align:center;
+}
+.booking-note.success{color:var(--accent)}
+@media(max-width:900px){
+  .appointment-layout{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .appointment-info,.booking-card{padding:22px}
+  .appointment-benefits{grid-template-columns:1fr}
+  .slots{grid-template-columns:1fr 1fr}
+  .form-row{grid-template-columns:1fr}
+}

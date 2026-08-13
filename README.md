@@ -52,3 +52,13 @@ Dépôts publics intégrés :
 - favicon
 - section technologies
 - CTA GitHub amélioré
+
+
+## V12
+- G-Transport renforcé comme projet phare (statut Prototype / En développement).
+- Ajout d'une section de prise de rendez-vous.
+- Choix du type de rendez-vous et d'un créneau de démonstration.
+- Qualification rapide du projet.
+- Préparation d'un e-mail de confirmation.
+- Bloc prévu pour un futur assistant IA.
+- Prochaine étape : connexion à Google Calendar pour afficher les vraies disponibilités et créer les rendez-vous automatiquement.
