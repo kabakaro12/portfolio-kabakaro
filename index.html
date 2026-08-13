@@ -415,7 +415,7 @@
       <div class="section-heading reveal">
         <p class="eyebrow">RENDEZ-VOUS</p>
         <h2>Parlons de votre projet.</h2>
-        <p class="services-intro">Choisissez le type d’échange puis un créneau disponible. Cette première version prépare la réservation ; la synchronisation automatique avec Google Calendar sera ajoutée à l’étape suivante.</p>
+        <p class="services-intro">Choisissez le type d’échange, une date puis un créneau réellement disponible. Les périodes déjà occupées dans mon agenda Google ne sont pas proposées.</p>
       </div>
 
       <div class="appointment-layout">
@@ -432,7 +432,7 @@
           <div class="ai-preview">
             <span>À venir</span>
             <strong>Assistant IA de prise de rendez-vous</strong>
-            <p>Il pourra qualifier le projet, consulter mes disponibilités et proposer automatiquement les meilleurs créneaux.</p>
+            <p>La base calendrier est prête : l’étape suivante sera l’assistant IA qui qualifiera votre projet et proposera automatiquement les meilleurs créneaux.</p>
           </div>
         </div>
 
@@ -449,13 +449,16 @@
           </div>
 
           <div class="booking-step">
-            <label>Créneaux disponibles</label>
-            <div class="slots" id="slots">
-              <button type="button" class="slot" data-slot="Mardi 10:00">Mardi<br><strong>10:00</strong></button>
-              <button type="button" class="slot" data-slot="Mardi 14:30">Mardi<br><strong>14:30</strong></button>
-              <button type="button" class="slot" data-slot="Jeudi 10:00">Jeudi<br><strong>10:00</strong></button>
-              <button type="button" class="slot" data-slot="Jeudi 15:00">Jeudi<br><strong>15:00</strong></button>
+            <label for="bookingDate">Choisissez une date</label>
+            <input id="bookingDate" type="date" required>
+          </div>
+
+          <div class="booking-step">
+            <div class="availability-head">
+              <label>Créneaux disponibles</label>
+              <span id="availabilityStatus">Choisissez d’abord une date.</span>
             </div>
+            <div class="slots" id="slots"></div>
             <input type="hidden" id="selectedSlot" required>
           </div>
 
@@ -473,7 +476,7 @@
           </label>
 
           <button class="btn primary full-width" type="submit">Préparer mon rendez-vous</button>
-          <p class="booking-note" id="bookingMessage">Aucun rendez-vous n’est encore envoyé automatiquement : cette V12 prépare le parcours avant la connexion Google Calendar.</p>
+          <p class="booking-note" id="bookingMessage">Les rendez-vous confirmés sont ajoutés au calendrier lorsque l’intégration Google est configurée sur Vercel.</p>
         </form>
       </div>
     </section>

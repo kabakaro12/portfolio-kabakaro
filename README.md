@@ -62,3 +62,35 @@ Dépôts publics intégrés :
 - Préparation d'un e-mail de confirmation.
 - Bloc prévu pour un futur assistant IA.
 - Prochaine étape : connexion à Google Calendar pour afficher les vraies disponibilités et créer les rendez-vous automatiquement.
+
+
+## V13 — Google Calendar
+
+La prise de rendez-vous n'utilise plus de faux créneaux. Le navigateur appelle deux fonctions Vercel :
+
+- `GET /api/availability?date=YYYY-MM-DD` : lit uniquement les périodes occupées du calendrier et renvoie les créneaux libres.
+- `POST /api/book` : revérifie le créneau, crée l'événement et invite le prospect par e-mail.
+
+### Sécurité
+
+Les identifiants Google ne sont jamais placés dans `index.html` ou `script.js`. Ils doivent être configurés dans **Vercel > Project Settings > Environment Variables**.
+
+Variables :
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+- `GOOGLE_REFRESH_TOKEN`
+- `GOOGLE_CALENDAR_ID` (`primary` par défaut)
+- `BOOKING_TIMEZONE` (`Europe/Paris`)
+- `BOOKING_UTC_OFFSET` (`+02:00` en été en France, `+01:00` en hiver)
+
+### Horaires V13
+
+Par défaut : lundi à vendredi, 09:00–18:00, créneaux de 30 minutes.
+
+### Étape suivante
+
+Ajouter l'assistant IA qui :
+1. qualifie le projet ;
+2. appelle `/api/availability` ;
+3. propose les créneaux ;
+4. confirme via `/api/book`.

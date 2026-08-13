@@ -18,52 +18,126 @@ document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
 
 document.getElementById("year").textContent = new Date().getFullYear();
 
-
-// V12 — Prototype de prise de rendez-vous
-const slotButtons = document.querySelectorAll(".slot");
+// V13 — Rendez-vous connectés à Google Calendar via API Vercel
+const bookingDate = document.getElementById("bookingDate");
+const slotsContainer = document.getElementById("slots");
 const selectedSlotInput = document.getElementById("selectedSlot");
-slotButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    slotButtons.forEach(b => b.classList.remove("selected"));
-    btn.classList.add("selected");
-    selectedSlotInput.value = btn.dataset.slot;
+const availabilityStatus = document.getElementById("availabilityStatus");
+const bookingForm = document.getElementById("bookingForm");
+
+const pad = n => String(n).padStart(2, "0");
+
+function todayISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
+if (bookingDate) {
+  bookingDate.min = todayISO();
+}
+
+function setAvailabilityStatus(text, kind = "") {
+  if (!availabilityStatus) return;
+  availabilityStatus.textContent = text;
+  availabilityStatus.className = kind;
+}
+
+function renderSlots(slots = []) {
+  slotsContainer.innerHTML = "";
+  selectedSlotInput.value = "";
+
+  if (!slots.length) {
+    setAvailabilityStatus("Aucun créneau libre pour cette date.", "error");
+    return;
+  }
+
+  setAvailabilityStatus(`${slots.length} créneau${slots.length > 1 ? "x" : ""} disponible${slots.length > 1 ? "s" : ""}.`, "ok");
+
+  slots.forEach(slot => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "slot";
+    btn.dataset.start = slot.start;
+    btn.dataset.end = slot.end;
+    btn.innerHTML = `<strong>${slot.label}</strong><br><span>30 min</span>`;
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".slot").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selectedSlotInput.value = JSON.stringify({ start: slot.start, end: slot.end, label: slot.label });
+    });
+    slotsContainer.appendChild(btn);
   });
+}
+
+bookingDate?.addEventListener("change", async () => {
+  const date = bookingDate.value;
+  if (!date) return;
+
+  slotsContainer.innerHTML = "";
+  selectedSlotInput.value = "";
+  setAvailabilityStatus("Recherche des disponibilités…", "loading");
+
+  try {
+    const res = await fetch(`/api/availability?date=${encodeURIComponent(date)}`);
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || "Impossible de charger les disponibilités.");
+    renderSlots(data.slots || []);
+  } catch (err) {
+    setAvailabilityStatus(err.message || "Erreur de calendrier.", "error");
+  }
 });
 
-const bookingForm = document.getElementById("bookingForm");
-bookingForm?.addEventListener("submit", (e) => {
+bookingForm?.addEventListener("submit", async (e) => {
   e.preventDefault();
+
   const type = document.getElementById("meetingType").value;
-  const slot = selectedSlotInput.value;
   const name = document.getElementById("bookingName").value.trim();
   const email = document.getElementById("bookingEmail").value.trim();
   const project = document.getElementById("bookingProject").value.trim();
   const msg = document.getElementById("bookingMessage");
 
-  if (!slot) {
-    msg.textContent = "Choisissez d’abord un créneau disponible.";
+  if (!selectedSlotInput.value) {
+    msg.textContent = "Choisissez un créneau disponible.";
     msg.classList.remove("success");
     return;
   }
 
-  const subject = encodeURIComponent(`Rendez-vous portfolio - ${type}`);
-  const body = encodeURIComponent(
-`Bonjour Kabakaro,
+  const slot = JSON.parse(selectedSlotInput.value);
+  const submitBtn = bookingForm.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Confirmation en cours…";
+  msg.textContent = "Vérification du créneau dans Google Calendar…";
+  msg.classList.remove("success");
 
-Je souhaite réserver un rendez-vous.
+  try {
+    const res = await fetch("/api/book", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        meetingType: type,
+        name,
+        email,
+        project,
+        start: slot.start,
+        end: slot.end
+      })
+    });
 
-Nom : ${name}
-E-mail : ${email}
-Type : ${type}
-Créneau souhaité : ${slot}
-Projet : ${project || "À préciser"}
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Impossible de créer le rendez-vous.");
 
-Merci de me confirmer votre disponibilité.`
-  );
-
-  msg.textContent = "Votre demande est prête. Votre application e-mail va s’ouvrir pour la confirmation.";
-  msg.classList.add("success");
-  setTimeout(() => {
-    window.location.href = `mailto:kabakaro16@gmail.com?subject=${subject}&body=${body}`;
-  }, 250);
+    msg.textContent = `Rendez-vous confirmé pour ${slot.label}. Un événement a été ajouté au calendrier.`;
+    msg.classList.add("success");
+    bookingForm.reset();
+    slotsContainer.innerHTML = "";
+    selectedSlotInput.value = "";
+    setAvailabilityStatus("Rendez-vous enregistré.", "ok");
+  } catch (err) {
+    msg.textContent = err.message || "Une erreur est survenue.";
+    msg.classList.remove("success");
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Confirmer mon rendez-vous";
+  }
 });

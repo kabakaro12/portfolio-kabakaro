@@ -273,3 +273,45 @@ footer{max-width:var(--max);margin:auto;padding:30px 24px 50px;border-top:1px so
   .slots{grid-template-columns:1fr 1fr}
   .form-row{grid-template-columns:1fr}
 }
+
+
+/* V13 — Google Calendar */
+.availability-head{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:8px;
+}
+.availability-head label{margin:0}
+#availabilityStatus{
+  color:var(--muted);
+  font-size:10px;
+  text-align:right;
+}
+#availabilityStatus.loading{color:#f0c86e}
+#availabilityStatus.ok{color:var(--accent)}
+#availabilityStatus.error{color:#ff8c8c}
+.slots:empty{
+  display:block;
+  min-height:70px;
+  border:1px dashed var(--border);
+  border-radius:12px;
+  background:rgba(255,255,255,.015);
+}
+.slot[disabled]{
+  opacity:.45;
+  cursor:not-allowed;
+}
+.booking-confirmation{
+  margin-top:12px;
+  padding:12px;
+  border:1px solid rgba(49,208,170,.25);
+  border-radius:10px;
+  color:var(--accent);
+  background:rgba(49,208,170,.06);
+}
+@media(max-width:600px){
+  .availability-head{align-items:flex-start;flex-direction:column}
+  #availabilityStatus{text-align:left}
+}
