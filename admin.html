@@ -57,6 +57,39 @@
 
     @media(max-width:760px){.crmgrid{grid-template-columns:1fr}.savecrm{width:100%}}
 
+
+
+    .top-switch{
+      position:sticky;
+      top:8px;
+      z-index:8;
+      background:rgba(7,17,31,.92);
+      backdrop-filter:blur(10px);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:8px;
+      margin:14px 0 18px;
+    }
+    .top-switch button{flex:1;min-width:140px}
+
+    .view-switch{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 18px}
+    .view-switch button.active{background:var(--accent);color:#062018}
+    .pipeline{display:grid;grid-template-columns:repeat(5,minmax(260px,1fr));gap:14px;overflow-x:auto;padding-bottom:8px}
+    .pipeline-col{background:rgba(10,23,40,.75);border:1px solid var(--line);border-radius:16px;padding:12px;min-height:280px}
+    .pipeline-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+    .pipeline-head h3{margin:0;font-size:16px}
+    .pipeline-count{font-size:12px;color:var(--muted);background:var(--panel2);border:1px solid var(--line);padding:5px 8px;border-radius:999px}
+    .pipeline-list{display:grid;gap:10px}
+    .pipeline-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+    .pipeline-card h4{margin:0 0 6px;font-size:15px}
+    .pipeline-card .subline{color:var(--muted);font-size:13px;margin-bottom:10px}
+    .pipeline-card .amount{display:block;margin-top:8px}
+    .pipeline-card .mini-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .pipeline-card .mini-links a{font-size:12px;text-decoration:none;padding:7px 9px;border-radius:9px;background:var(--panel2);border:1px solid var(--line)}
+    .pipeline-card .followup-alert{margin-top:10px}
+    .pipeline-empty{color:var(--muted);font-size:13px;padding:12px;text-align:center;border:1px dashed var(--line);border-radius:12px}
+    @media(max-width:900px){.pipeline{grid-template-columns:repeat(5,260px)}}
+
     @media(max-width:760px){.hero{display:block}.actions{margin-top:16px}.stats{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr}.meta{grid-template-columns:1fr}}
   </style>
 </head>
@@ -88,6 +121,11 @@
         <button class="secondary" id="logoutBtn">Déconnexion</button>
       </div>
     </section>
+
+    <div class="view-switch top-switch">
+      <button class="secondary active" id="listViewBtn" type="button">☰ Vue liste</button>
+      <button class="secondary" id="pipelineViewBtn" type="button">▦ Vue pipeline</button>
+    </div>
 
     <section class="stats">
       <div class="stat"><small>Total affiché</small><strong id="statTotal">0</strong></div>
@@ -121,8 +159,8 @@
         <option value="none">Sans relance</option>
       </select>
     </section>
-
-    <section id="appointments" class="list"><div class="loading">Connexion requise.</div></section>
+<section id="appointments" class="list"><div class="loading">Connexion requise.</div></section>
+    <section id="pipeline" class="pipeline" style="display:none"></section>
   </main>
 
 <script>
@@ -171,6 +209,7 @@ async function loadAppointments(){
     sessionStorage.setItem("kk_admin_password", state.password);
     buildTypeFilter();
     render();
+    setView(localStorage.getItem("kk_admin_view")==="pipeline" ? "pipeline" : "list");
   }catch(e){
     if(e.message==="AUTH"){
       sessionStorage.removeItem("kk_admin_password");
@@ -180,6 +219,108 @@ async function loadAppointments(){
     }else{
       $("appointments").innerHTML = `<div class="empty">${esc(e.message)}</div>`;
     }
+  }
+}
+
+
+const PIPELINE_STAGES = ["Nouveau","Contacté","Devis envoyé","Gagné","Perdu"];
+
+function pipelineCard(a){
+  const due = followUpState(a)==="due" && !["Gagné","Perdu"].includes(a.crmStatus);
+  return `
+    <article class="pipeline-card">
+      <h4>${esc(a.name || "Client sans nom")}</h4>
+      <div class="subline">${esc(a.type || "Rendez-vous")} · ${esc(formatDate(a.start))}</div>
+      ${a.email ? `<div class="subline">${esc(a.email)}</div>` : ""}
+      ${a.crmEstimatedAmount ? `<span class="amount">${euro(a.crmEstimatedAmount)}</span>` : ""}
+      ${a.crmFollowUpDate ? `<div class="subline">Relance : ${esc(new Intl.DateTimeFormat("fr-FR",{day:"2-digit",month:"short",year:"numeric"}).format(new Date(a.crmFollowUpDate+"T12:00:00")))}</div>` : ""}
+      ${due ? `<div class="followup-alert overdue">⚠ Relance à faire</div>` : ""}
+      ${a.project ? `<div class="project" style="margin-top:10px">${esc(a.project)}</div>` : ""}
+      <div class="mini-links">
+        ${a.email ? `<a href="mailto:${esc(a.email)}">E-mail</a>` : ""}
+        ${a.meetLink ? `<a href="${esc(a.meetLink)}" target="_blank" rel="noopener">Meet</a>` : ""}
+        ${a.calendarLink ? `<a href="${esc(a.calendarLink)}" target="_blank" rel="noopener">Calendar</a>` : ""}
+      </div>
+      <div style="margin-top:10px">
+        <select class="pipeline-stage-select" data-id="${esc(a.id)}">
+          ${PIPELINE_STAGES.map(s=>`<option ${a.crmStatus===s?"selected":""}>${s}</option>`).join("")}
+        </select>
+      </div>
+    </article>`;
+}
+
+function renderPipeline(){
+  const rows = filtered();
+  const root = $("pipeline");
+  root.innerHTML = PIPELINE_STAGES.map(stage=>{
+    const items = rows.filter(a=>a.crmStatus===stage);
+    const total = items.reduce((s,a)=>s+Number(a.crmEstimatedAmount||0),0);
+    return `
+      <section class="pipeline-col">
+        <div class="pipeline-head">
+          <h3>${stage}</h3>
+          <span class="pipeline-count">${items.length}${total ? ` · ${euro(total)}` : ""}</span>
+        </div>
+        <div class="pipeline-list">
+          ${items.length ? items.map(pipelineCard).join("") : `<div class="pipeline-empty">Aucun prospect</div>`}
+        </div>
+      </section>`;
+  }).join("");
+
+  document.querySelectorAll(".pipeline-stage-select").forEach(sel=>{
+    sel.addEventListener("change", async ()=>{
+      const eventId = sel.dataset.id;
+      const item = state.appointments.find(x=>x.id===eventId);
+      if(!item) return;
+      const previous = item.crmStatus;
+      sel.disabled = true;
+      try{
+        const r = await fetch("/api/admin-appointment-update",{
+          method:"PATCH",
+          headers:{
+            "Content-Type":"application/json",
+            "x-admin-password":state.password
+          },
+          body:JSON.stringify({
+            eventId,
+            crmStatus:sel.value,
+            crmNotes:item.crmNotes || "",
+            crmFollowUpDate:item.crmFollowUpDate || "",
+            crmEstimatedAmount:Number(item.crmEstimatedAmount || 0)
+          })
+        });
+        const data = await r.json();
+        if(!r.ok) throw new Error(data.error || "Erreur serveur");
+        item.crmStatus = data.crmStatus;
+        render();
+        renderPipeline();
+      }catch(e){
+        item.crmStatus = previous;
+        sel.value = previous;
+        alert("Impossible de changer le statut : " + e.message);
+      }finally{
+        sel.disabled = false;
+      }
+    });
+  });
+}
+
+function setView(mode){
+  const list = $("appointments"), pipe = $("pipeline");
+  const listBtn = $("listViewBtn"), pipeBtn = $("pipelineViewBtn");
+  if(mode==="pipeline"){
+    list.style.display="none";
+    pipe.style.display="grid";
+    listBtn.classList.remove("active");
+    pipeBtn.classList.add("active");
+    renderPipeline();
+    localStorage.setItem("kk_admin_view","pipeline");
+  }else{
+    list.style.display="grid";
+    pipe.style.display="none";
+    pipeBtn.classList.remove("active");
+    listBtn.classList.add("active");
+    localStorage.setItem("kk_admin_view","list");
   }
 }
 
@@ -332,7 +473,12 @@ loginForm.addEventListener("submit", e=>{
 });
 $("refreshBtn").addEventListener("click",loadAppointments);
 $("logoutBtn").addEventListener("click",()=>{sessionStorage.removeItem("kk_admin_password");state.password="";login.style.display="flex";$("password").value="";});
-["search","statusFilter","typeFilter","crmFilter","followUpFilter"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",render));
+["search","statusFilter","typeFilter","crmFilter","followUpFilter"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",()=>{
+  render();
+  if($("pipeline").style.display!=="none") renderPipeline();
+}));
+$("listViewBtn").addEventListener("click",()=>setView("list"));
+$("pipelineViewBtn").addEventListener("click",()=>setView("pipeline"));
 
 if(state.password){ $("password").value=state.password; loadAppointments(); }
 </script>
