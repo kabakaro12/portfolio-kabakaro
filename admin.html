@@ -23,10 +23,10 @@
     .actions{display:flex;gap:10px;flex-wrap:wrap}
     button,.btn{border:0;border-radius:12px;padding:11px 15px;font-weight:800;cursor:pointer}
     .primary{background:var(--accent);color:#062018}.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
     .stat{background:rgba(14,27,45,.85);border:1px solid var(--line);padding:18px;border-radius:var(--radius)}
     .stat small{color:var(--muted)}.stat strong{display:block;font-size:30px;margin-top:6px}
-    .filters{display:grid;grid-template-columns:1fr 170px 170px 190px;gap:10px;margin:18px 0}
+    .filters{display:grid;grid-template-columns:1fr 150px 150px 170px 170px;gap:10px;margin:18px 0}
     input,select{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px 14px;font-size:15px}
     .list{display:grid;gap:12px}.card{background:rgba(14,27,45,.92);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
     .cardtop{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.when{font-weight:900;font-size:18px}
@@ -48,6 +48,13 @@
     .savecrm{background:var(--accent);color:#062018;min-height:44px}
     .savecrm[disabled]{opacity:.6;cursor:wait}
     .crmstatus{font-size:12px;color:var(--muted);margin-top:8px;min-height:18px}
+
+    .followup-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .followup-alert{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:999px;font-size:12px;font-weight:900;margin-top:10px;background:rgba(243,191,85,.12);color:var(--warning)}
+    .followup-alert.overdue{background:rgba(255,107,120,.12);color:var(--danger)}
+    .amount{font-weight:900;color:var(--accent)}
+    @media(max-width:760px){.followup-row{grid-template-columns:1fr}}
+
     @media(max-width:760px){.crmgrid{grid-template-columns:1fr}.savecrm{width:100%}}
 
     @media(max-width:760px){.hero{display:block}.actions{margin-top:16px}.stats{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr}.meta{grid-template-columns:1fr}}
@@ -87,6 +94,8 @@
       <div class="stat"><small>À venir</small><strong id="statUpcoming">0</strong></div>
       <div class="stat"><small>Confirmés</small><strong id="statConfirmed">0</strong></div>
       <div class="stat"><small>En attente</small><strong id="statPending">0</strong></div>
+      <div class="stat"><small>Potentiel commercial</small><strong id="statPipeline">0 €</strong></div>
+      <div class="stat"><small>Relances à faire</small><strong id="statFollowUps">0</strong></div>
     </section>
 
     <section class="filters">
@@ -104,6 +113,12 @@
         <option>Devis envoyé</option>
         <option>Gagné</option>
         <option>Perdu</option>
+      </select>
+      <select id="followUpFilter">
+        <option value="">Toutes les relances</option>
+        <option value="due">À relancer</option>
+        <option value="future">Relances futures</option>
+        <option value="none">Sans relance</option>
       </select>
     </section>
 
@@ -125,6 +140,23 @@ function badgeClass(status){
   if(["Refusé","Annulé"].includes(status)) return "bad";
   return "";
 }
+
+function euro(v){
+  const n = Number(v || 0);
+  return new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(n);
+}
+function todayISO(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const day = String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+function followUpState(a){
+  if(!a.crmFollowUpDate) return "none";
+  return a.crmFollowUpDate <= todayISO() ? "due" : "future";
+}
+
 function esc(s=""){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 
 async function loadAppointments(){
@@ -159,10 +191,14 @@ function buildTypeFilter(){
 }
 function filtered(){
   const q = $("search").value.trim().toLowerCase();
-  const st = $("statusFilter").value, ty = $("typeFilter").value, crm = $("crmFilter").value;
+  const st = $("statusFilter").value, ty = $("typeFilter").value, crm = $("crmFilter").value, fu = $("followUpFilter").value;
   return state.appointments.filter(a=>{
-    const hay=[a.name,a.email,a.project,a.type,a.crmStatus,a.crmNotes].join(" ").toLowerCase();
-    return (!q || hay.includes(q)) && (!st || a.status===st) && (!ty || a.type===ty) && (!crm || a.crmStatus===crm);
+    const hay=[a.name,a.email,a.project,a.type,a.crmStatus,a.crmNotes,a.crmFollowUpDate,a.crmEstimatedAmount].join(" ").toLowerCase();
+    return (!q || hay.includes(q)) &&
+      (!st || a.status===st) &&
+      (!ty || a.type===ty) &&
+      (!crm || a.crmStatus===crm) &&
+      (!fu || followUpState(a)===fu);
   });
 }
 function render(){
@@ -171,6 +207,8 @@ function render(){
   $("statUpcoming").textContent = rows.filter(a=>["À venir","Confirmé","En attente","Peut-être"].includes(a.status) && new Date(a.start)>=new Date()).length;
   $("statConfirmed").textContent = rows.filter(a=>a.status==="Confirmé").length;
   $("statPending").textContent = rows.filter(a=>a.status==="En attente").length;
+  $("statPipeline").textContent = euro(rows.filter(a=>!["Perdu"].includes(a.crmStatus)).reduce((s,a)=>s+Number(a.crmEstimatedAmount||0),0));
+  $("statFollowUps").textContent = rows.filter(a=>followUpState(a)==="due" && !["Gagné","Perdu"].includes(a.crmStatus)).length;
 
   if(!rows.length){ $("appointments").innerHTML='<div class="empty">Aucun rendez-vous ne correspond aux filtres.</div>'; return; }
   $("appointments").innerHTML = rows.map(a=>`
@@ -189,6 +227,13 @@ function render(){
         <div><span>Fin</span><br><b>${esc(formatDate(a.end))}</b></div>
       </div>
       ${a.project ? `<div class="project"><b>Projet</b><br>${esc(a.project)}</div>` : ""}
+      ${(a.crmEstimatedAmount || a.crmFollowUpDate) ? `
+        <div class="followup-row">
+          <div>${a.crmEstimatedAmount ? `<span class="sub">Montant estimé</span><br><span class="amount">${euro(a.crmEstimatedAmount)}</span>` : ""}</div>
+          <div>${a.crmFollowUpDate ? `<span class="sub">Relance prévue</span><br><b>${esc(new Intl.DateTimeFormat("fr-FR",{day:"2-digit",month:"long",year:"numeric"}).format(new Date(a.crmFollowUpDate+"T12:00:00")))}</b>` : ""}</div>
+        </div>
+        ${followUpState(a)==="due" && !["Gagné","Perdu"].includes(a.crmStatus) ? `<div class="followup-alert overdue">⚠ Relance à faire</div>` : ""}
+      ` : ""}
       <div class="links">
         ${a.meetLink ? `<a href="${esc(a.meetLink)}" target="_blank" rel="noopener">Google Meet ↗</a>` : ""}
         ${a.calendarLink ? `<a href="${esc(a.calendarLink)}" target="_blank" rel="noopener">Google Calendar ↗</a>` : ""}
@@ -208,7 +253,11 @@ function render(){
             <textarea class="crm-notes" data-id="${esc(a.id)}" placeholder="Ex. Client rappelé, budget annoncé, prochaine action…">${esc(a.crmNotes || "")}</textarea>
           </div>
           <div>
-            <button class="savecrm" data-id="${esc(a.id)}">Enregistrer</button>
+            <label>Date de relance</label>
+            <input class="crm-followup" data-id="${esc(a.id)}" type="date" value="${esc(a.crmFollowUpDate || "")}">
+            <label style="margin-top:10px">Montant estimé (€)</label>
+            <input class="crm-amount" data-id="${esc(a.id)}" type="number" min="0" step="50" inputmode="decimal" value="${esc(a.crmEstimatedAmount || "")}" placeholder="Ex. 1500">
+            <button class="savecrm" style="width:100%;margin-top:10px" data-id="${esc(a.id)}">Enregistrer</button>
           </div>
         </div>
         <div class="crmstatus" id="crm-msg-${esc(a.id)}"></div>
@@ -224,8 +273,10 @@ function render(){
 async function saveCRM(eventId, button){
   const select = document.querySelector(`.crm-select[data-id="${CSS.escape(eventId)}"]`);
   const notes = document.querySelector(`.crm-notes[data-id="${CSS.escape(eventId)}"]`);
+  const followup = document.querySelector(`.crm-followup[data-id="${CSS.escape(eventId)}"]`);
+  const amount = document.querySelector(`.crm-amount[data-id="${CSS.escape(eventId)}"]`);
   const msg = document.getElementById(`crm-msg-${eventId}`);
-  if(!select || !notes) return;
+  if(!select || !notes || !followup || !amount) return;
 
   button.disabled = true;
   const oldText = button.textContent;
@@ -242,7 +293,9 @@ async function saveCRM(eventId, button){
       body:JSON.stringify({
         eventId,
         crmStatus:select.value,
-        crmNotes:notes.value
+        crmNotes:notes.value,
+        crmFollowUpDate:followup.value,
+        crmEstimatedAmount:Number(amount.value || 0)
       })
     });
     const data = await r.json();
@@ -253,6 +306,8 @@ async function saveCRM(eventId, button){
     if(item){
       item.crmStatus = data.crmStatus;
       item.crmNotes = data.crmNotes;
+      item.crmFollowUpDate = data.crmFollowUpDate;
+      item.crmEstimatedAmount = data.crmEstimatedAmount;
     }
     if(msg) msg.textContent = "✓ Suivi enregistré";
   }catch(e){
@@ -277,7 +332,7 @@ loginForm.addEventListener("submit", e=>{
 });
 $("refreshBtn").addEventListener("click",loadAppointments);
 $("logoutBtn").addEventListener("click",()=>{sessionStorage.removeItem("kk_admin_password");state.password="";login.style.display="flex";$("password").value="";});
-["search","statusFilter","typeFilter","crmFilter"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",render));
+["search","statusFilter","typeFilter","crmFilter","followUpFilter"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",render));
 
 if(state.password){ $("password").value=state.password; loadAppointments(); }
 </script>

@@ -82,3 +82,17 @@ L'espace `/admin.html` permet maintenant de gérer le suivi commercial de chaque
 
 Les données CRM sont stockées dans les `extendedProperties.private` de l'événement Google Calendar.
 Elles restent donc disponibles après un redéploiement Vercel et ne sont pas visibles par le client dans son invitation.
+
+
+## Relances & montant estimé — v16.4
+
+Le mini-CRM permet maintenant d'ajouter à chaque prospect :
+- une **date de relance** ;
+- un **montant estimé du projet en euros**.
+
+Le tableau de bord affiche aussi :
+- le **potentiel commercial total** ;
+- le nombre de **relances à faire** ;
+- un filtre **À relancer / Relances futures / Sans relance**.
+
+Comme les autres données CRM, ces informations sont enregistrées dans les propriétés privées de l'événement Google Calendar et ne sont pas visibles par le client.
