@@ -272,7 +272,7 @@
         <button type="submit" class="primary" id="quoteGenerate">Générer / ouvrir le devis PDF</button>
       </div>
       <div class="error" id="quoteError"></div>
-<p class="sub" style="margin-top:10px">Sur iPhone : après génération, la feuille de partage s’ouvre avec <strong>Enregistrer dans Fichiers</strong>, <strong>Imprimer</strong>, AirDrop, etc.</p>
+<p class="sub" style="margin-top:10px">Sur iPhone : un nouvel onglet s’ouvre pendant la génération. Le PDF y apparaîtra ensuite avec les options natives <strong>Partager</strong>, <strong>Imprimer</strong> et <strong>Enregistrer dans Fichiers</strong>.</p>
     </form>
   </div>
 
@@ -658,6 +658,39 @@ if (quoteModal) quoteModal.addEventListener("click",e=>{if(e.target===quoteModal
 if ($("quoteForm")) $("quoteForm").addEventListener("submit",async e=>{
   e.preventDefault();
   const eventId = $("quoteEventId").value;
+
+  const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+  // IMPORTANT iPhone/Safari:
+  // ouvrir l'onglet pendant le clic utilisateur, AVANT tout await/fetch.
+  // Sinon Safari bloque l'ouverture du PDF après la requête réseau.
+  let pdfPreviewWindow = null;
+  if (isiOS) {
+    pdfPreviewWindow = window.open("about:blank", "_blank");
+    if (pdfPreviewWindow) {
+      pdfPreviewWindow.document.write(`
+        <!doctype html>
+        <html lang="fr">
+        <head>
+          <meta name="viewport" content="width=device-width,initial-scale=1">
+          <title>Génération du devis…</title>
+          <style>
+            body{margin:0;background:#07111f;color:#fff;font-family:system-ui,-apple-system,sans-serif;
+              min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+            .box{max-width:420px}
+            .loader{width:40px;height:40px;border:4px solid #20364f;border-top-color:#39d1af;border-radius:50%;
+              margin:0 auto 18px;animation:s .8s linear infinite}
+            @keyframes s{to{transform:rotate(360deg)}}
+            p{color:#9aabc0;line-height:1.5}
+          </style>
+        </head>
+        <body><div class="box"><div class="loader"></div><h2>Génération du devis PDF…</h2>
+        <p>Le document va s’ouvrir ici automatiquement.</p></div></body>
+        </html>`);
+      pdfPreviewWindow.document.close();
+    }
+  }
   const button = $("quoteGenerate");
   $("quoteError").textContent = "";
 
@@ -699,33 +732,19 @@ if ($("quoteForm")) $("quoteForm").addEventListener("submit",async e=>{
     const filename = match ? match[1] : "Devis-Kabakaro.pdf";
 
     const url = URL.createObjectURL(blob);
-    const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
     if (isiOS) {
-      // Sur iPhone/iPad, utiliser la feuille de partage native.
-      // Elle donne directement accès à "Enregistrer dans Fichiers", "Imprimer", AirDrop, etc.
-      const file = new File([blob], filename, { type: "application/pdf" });
-
-      if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
-        try {
-          await navigator.share({
-            title: filename.replace(/\.pdf$/i, ""),
-            text: "Devis PDF",
-            files: [file]
-          });
-        } catch (shareError) {
-          // Si l'utilisateur ferme la feuille de partage, ne pas afficher une erreur bloquante.
-          if (shareError && shareError.name !== "AbortError") {
-            window.open(url, "_blank");
-          }
-        }
+      // L'onglet a déjà été ouvert au moment du clic.
+      // On le dirige maintenant vers le vrai PDF.
+      if (pdfPreviewWindow && !pdfPreviewWindow.closed) {
+        pdfPreviewWindow.location.replace(url);
       } else {
-        // Fallback Safari si le partage de fichiers n'est pas disponible.
-        window.open(url, "_blank");
+        // Fallback rare si Safari a malgré tout bloqué le nouvel onglet.
+        window.location.href = url;
       }
 
-      setTimeout(()=>URL.revokeObjectURL(url), 60000);
+      // Garder l'URL assez longtemps pour le visualiseur PDF iOS.
+      setTimeout(()=>URL.revokeObjectURL(url), 5 * 60 * 1000);
     } else {
       const link = document.createElement("a");
       link.href = url;
@@ -748,6 +767,9 @@ if ($("quoteForm")) $("quoteForm").addEventListener("submit",async e=>{
     render();
     if($("pipeline").style.display!=="none") renderPipeline();
   }catch(err){
+    if (typeof pdfPreviewWindow !== "undefined" && pdfPreviewWindow && !pdfPreviewWindow.closed) {
+      pdfPreviewWindow.close();
+    }
     $("quoteError").textContent = err.message;
   }finally{
     button.disabled = false;
