@@ -96,7 +96,9 @@ module.exports = async function handler(req, res) {
           meetLink: meetLink(event),
           calendarLink: event.htmlLink || null,
           created: event.created || null,
-          updated: event.updated || null
+          updated: event.updated || null,
+          crmStatus: event.extendedProperties?.private?.crmStatus || "Nouveau",
+          crmNotes: event.extendedProperties?.private?.crmNotes || ""
         };
       });
 
