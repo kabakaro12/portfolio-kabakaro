@@ -96,3 +96,64 @@ Le tableau de bord affiche aussi :
 - un filtre **À relancer / Relances futures / Sans relance**.
 
 Comme les autres données CRM, ces informations sont enregistrées dans les propriétés privées de l'événement Google Calendar et ne sont pas visibles par le client.
+
+
+## Vue Pipeline commercial — v16.5
+
+L'espace admin propose maintenant deux vues :
+
+- **Vue liste**
+- **Vue pipeline**
+
+Le pipeline affiche cinq colonnes :
+- Nouveau
+- Contacté
+- Devis envoyé
+- Gagné
+- Perdu
+
+Chaque carte affiche le client, le type de projet, la date du rendez-vous, le montant estimé et la relance éventuelle.
+
+Le statut commercial peut être modifié directement depuis la carte pipeline.
+
+
+## Correctif Pipeline — v16.5.1
+
+Les boutons **Vue liste** et **Vue pipeline** sont maintenant placés juste sous
+**Actualiser / Déconnexion** dans l'espace administrateur.
+
+Le sélecteur de vue est également sticky afin de rester facilement accessible sur mobile.
+
+
+## Pipeline mobile — v16.6
+
+Sur mobile, la vue Pipeline affiche une seule étape à la fois grâce à des onglets :
+Nouveau, Contacté, Devis envoyé, Gagné et Perdu.
+
+Chaque onglet affiche le nombre de prospects et le montant estimé.
+Sur ordinateur, la vue en cinq colonnes reste inchangée.
+
+
+## Devis PDF — v16.7
+
+L'espace admin permet maintenant de générer un devis à partir d'un prospect.
+
+Fonctionnement :
+- bouton **Créer devis PDF** depuis la vue liste ;
+- bouton **Devis PDF** depuis le pipeline ;
+- montant HT ;
+- TVA configurable ;
+- durée de validité ;
+- description de prestation ;
+- téléchargement automatique du PDF ;
+- passage automatique du suivi commercial à **Devis envoyé** ;
+- montant estimé synchronisé avec le montant HT du devis.
+
+Variables Vercel optionnelles pour personnaliser l'émetteur :
+- `QUOTE_ISSUER_NAME`
+- `QUOTE_ISSUER_TITLE`
+- `QUOTE_ISSUER_EMAIL`
+- `QUOTE_ISSUER_PHONE`
+- `QUOTE_ISSUER_ADDRESS`
+
+Important : le modèle PDF contient une note invitant à adapter les mentions fiscales, juridiques et les conditions de paiement à la situation réelle avant envoi au client.

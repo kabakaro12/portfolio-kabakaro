@@ -1,9 +1,12 @@
 {
   "name": "kabakaro-portfolio-v15",
-  "version": "16.4.0",
+  "version": "16.7.0",
   "private": true,
-  "description": "Portfolio Kabakaro mini-CRM avec relances, montant estimé et pipeline commercial",
+  "description": "Portfolio Kabakaro mini-CRM avec génération de devis PDF",
   "engines": {
     "node": "22.x"
+  },
+  "dependencies": {
+    "pdfkit": "^0.15.2"
   }
 }

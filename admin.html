@@ -135,6 +135,22 @@
     }
 
 
+
+    .quote-btn{background:#1c3d5a;color:#fff;border:1px solid var(--line)}
+    .quote-btn:hover{filter:brightness(1.08)}
+    .quote-modal{position:fixed;inset:0;z-index:50;background:rgba(2,8,16,.88);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:18px}
+    .quote-modal.open{display:flex}
+    .quote-box{width:min(580px,100%);max-height:92vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px}
+    .quote-box h2{margin:0 0 8px}
+    .quote-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .quote-box label{display:block;color:var(--muted);font-size:12px;font-weight:800;margin:12px 0 6px}
+    .quote-box textarea{width:100%;min-height:90px;resize:vertical;background:#0a1728;border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px 14px;font:inherit}
+    .quote-actions{display:flex;gap:10px;margin-top:16px}
+    .quote-actions button{flex:1}
+    .quote-total{margin-top:14px;background:#0a1728;border:1px solid var(--line);border-radius:12px;padding:14px}
+    .quote-total strong{font-size:20px;color:var(--accent)}
+    @media(max-width:600px){.quote-grid{grid-template-columns:1fr}}
+
     @media(max-width:760px){.hero{display:block}.actions{margin-top:16px}.stats{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr}.meta{grid-template-columns:1fr}}
   </style>
 </head>
@@ -288,6 +304,7 @@ function pipelineCard(a){
         ${a.email ? `<a href="mailto:${esc(a.email)}">E-mail</a>` : ""}
         ${a.meetLink ? `<a href="${esc(a.meetLink)}" target="_blank" rel="noopener">Meet</a>` : ""}
         ${a.calendarLink ? `<a href="${esc(a.calendarLink)}" target="_blank" rel="noopener">Calendar</a>` : ""}
+        <button class="quote-btn open-quote" data-id="${esc(a.id)}" type="button">Devis PDF</button>
       </div>
       <div style="margin-top:10px">
         <select class="pipeline-stage-select" data-id="${esc(a.id)}">
@@ -342,6 +359,8 @@ function renderPipeline(){
     <div><strong>${activePipelineStage}</strong><br><span>${activeItems.length} prospect${activeItems.length>1?"s":""}</span></div>
     <div style="text-align:right"><strong>${euro(activeTotal)}</strong><br><span>Montant estimé</span></div>
   `;
+
+  bindQuoteButtons();
 
   document.querySelectorAll(".pipeline-stage-select").forEach(sel=>{
     sel.addEventListener("change", async ()=>{
@@ -406,6 +425,13 @@ function setView(mode){
   }
 }
 
+
+function bindQuoteButtons(){
+  document.querySelectorAll(".open-quote").forEach(btn=>{
+    btn.onclick = ()=>openQuote(btn.dataset.id);
+  });
+}
+
 function buildTypeFilter(){
   const sel = $("typeFilter"), current = sel.value;
   const types = [...new Set(state.appointments.map(x=>x.type).filter(Boolean))].sort();
@@ -461,6 +487,7 @@ function render(){
         ${a.meetLink ? `<a href="${esc(a.meetLink)}" target="_blank" rel="noopener">Google Meet ↗</a>` : ""}
         ${a.calendarLink ? `<a href="${esc(a.calendarLink)}" target="_blank" rel="noopener">Google Calendar ↗</a>` : ""}
         ${a.email ? `<a href="mailto:${esc(a.email)}">Écrire au client</a>` : ""}
+        <button class="quote-btn open-quote" data-id="${esc(a.id)}" type="button">Créer devis PDF</button>
       </div>
 
       <div class="crm">
@@ -490,6 +517,7 @@ function render(){
   document.querySelectorAll(".savecrm").forEach(btn=>{
     btn.addEventListener("click",()=>saveCRM(btn.dataset.id, btn));
   });
+  bindQuoteButtons();
 }
 
 
@@ -547,6 +575,106 @@ async function saveCRM(eventId, button){
   }
 }
 
+
+const quoteModal = $("quoteModal");
+function quoteTotalRefresh(){
+  const ht = Number($("quoteAmount").value || 0);
+  const vat = Number($("quoteVat").value || 0);
+  $("quoteTotal").textContent = euro(ht + ht * (vat/100));
+}
+function openQuote(eventId){
+  const a = state.appointments.find(x=>x.id===eventId);
+  if(!a) return;
+  $("quoteEventId").value = eventId;
+  $("quoteClientLabel").textContent = `${a.name || "Client"} — ${a.type || "Projet"}`;
+  $("quoteAmount").value = Number(a.crmEstimatedAmount || 0) || "";
+  $("quoteVat").value = "0";
+  $("quoteValidity").value = "30";
+  $("quoteDescription").value = a.type ? `${a.type}${a.project ? " — " + a.project : ""}` : (a.project || "");
+  $("quoteNotes").value = a.crmNotes || "";
+  $("quoteError").textContent = "";
+  quoteTotalRefresh();
+  quoteModal.classList.add("open");
+  quoteModal.setAttribute("aria-hidden","false");
+}
+function closeQuote(){
+  quoteModal.classList.remove("open");
+  quoteModal.setAttribute("aria-hidden","true");
+}
+$("quoteCancel").addEventListener("click",closeQuote);
+quoteModal.addEventListener("click",e=>{if(e.target===quoteModal) closeQuote();});
+["quoteAmount","quoteVat"].forEach(id=>$(id).addEventListener("input",quoteTotalRefresh));
+
+$("quoteForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const eventId = $("quoteEventId").value;
+  const button = $("quoteGenerate");
+  $("quoteError").textContent = "";
+
+  const amountHT = Number($("quoteAmount").value || 0);
+  if(amountHT<=0){
+    $("quoteError").textContent = "Indique un montant supérieur à 0 €.";
+    return;
+  }
+
+  button.disabled = true;
+  const old = button.textContent;
+  button.textContent = "Génération…";
+
+  try{
+    const r = await fetch("/api/admin-quote",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-admin-password":state.password
+      },
+      body:JSON.stringify({
+        eventId,
+        amountHT,
+        vatRate:Number($("quoteVat").value || 0),
+        validityDays:Number($("quoteValidity").value || 30),
+        description:$("quoteDescription").value,
+        crmNotes:$("quoteNotes").value
+      })
+    });
+
+    if(!r.ok){
+      const data = await r.json().catch(()=>({}));
+      throw new Error(data.error || "Impossible de générer le devis.");
+    }
+
+    const blob = await r.blob();
+    const disposition = r.headers.get("content-disposition") || "";
+    const match = disposition.match(/filename="([^"]+)"/i);
+    const filename = match ? match[1] : "Devis-Kabakaro.pdf";
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),3000);
+
+    const a = state.appointments.find(x=>x.id===eventId);
+    if(a){
+      a.crmStatus = "Devis envoyé";
+      a.crmEstimatedAmount = amountHT;
+      a.crmNotes = $("quoteNotes").value;
+    }
+
+    closeQuote();
+    render();
+    if($("pipeline").style.display!=="none") renderPipeline();
+  }catch(err){
+    $("quoteError").textContent = err.message;
+  }finally{
+    button.disabled = false;
+    button.textContent = old;
+  }
+});
+
 loginForm.addEventListener("submit", e=>{
   e.preventDefault();
   state.password = $("password").value;
@@ -564,5 +692,53 @@ $("pipelineViewBtn").addEventListener("click",()=>setView("pipeline"));
 
 if(state.password){ $("password").value=state.password; loadAppointments(); }
 </script>
+
+  <div class="quote-modal" id="quoteModal" aria-hidden="true">
+    <form class="quote-box" id="quoteForm">
+      <h2>Créer un devis PDF</h2>
+      <p class="sub" id="quoteClientLabel">Prospect</p>
+
+      <input type="hidden" id="quoteEventId">
+
+      <div class="quote-grid">
+        <div>
+          <label>Montant HT (€)</label>
+          <input id="quoteAmount" type="number" min="1" step="50" inputmode="decimal" required>
+        </div>
+        <div>
+          <label>TVA (%)</label>
+          <input id="quoteVat" type="number" min="0" max="100" step="0.1" value="0">
+        </div>
+      </div>
+
+      <div class="quote-grid">
+        <div>
+          <label>Validité du devis (jours)</label>
+          <input id="quoteValidity" type="number" min="1" max="365" value="30">
+        </div>
+        <div>
+          <label>Total TTC estimé</label>
+          <div class="quote-total"><strong id="quoteTotal">0 €</strong></div>
+        </div>
+      </div>
+
+      <label>Description de la prestation</label>
+      <textarea id="quoteDescription" placeholder="Ex. Création d'un site vitrine responsive avec formulaire de contact…"></textarea>
+
+      <label>Note interne (optionnel)</label>
+      <textarea id="quoteNotes" placeholder="Cette note reste dans le CRM et n'apparaît pas sur le devis."></textarea>
+
+      <p class="sub" style="margin-top:12px">
+        Après génération, le prospect passera automatiquement au statut <strong>Devis envoyé</strong>.
+      </p>
+
+      <div class="quote-actions">
+        <button type="button" class="secondary" id="quoteCancel">Annuler</button>
+        <button type="submit" class="primary" id="quoteGenerate">Télécharger le devis PDF</button>
+      </div>
+      <div class="error" id="quoteError"></div>
+    </form>
+  </div>
+
 </body>
 </html>
