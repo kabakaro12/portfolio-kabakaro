@@ -127,11 +127,18 @@ bookingForm?.addEventListener("submit", async (e) => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Impossible de créer le rendez-vous.");
 
-    if (data.meetLink) {
-      msg.innerHTML = `Rendez-vous confirmé pour ${slot.label}. <a href="${data.meetLink}" target="_blank" rel="noopener">Ouvrir le lien Google Meet ↗</a>`;
-    } else {
-      msg.textContent = `Rendez-vous confirmé pour ${slot.label}. L’invitation Google Calendar a été envoyée.`;
-    }
+    const meetAction = data.meetLink
+      ? `<div style="margin-top:10px"><a href="${data.meetLink}" target="_blank" rel="noopener">Ouvrir le lien Google Meet ↗</a></div>`
+      : "";
+
+    msg.innerHTML = `
+      <strong>Votre rendez-vous a bien été envoyé.</strong><br>
+      Rendez-vous confirmé pour <strong>${slot.label}</strong>.<br>
+      Vous recevrez également l'invitation Google Calendar par e-mail.<br><br>
+      <strong>Nous vous recontacterons pour la suite.</strong>
+      Il n'est pas nécessaire de nous relancer ou de refaire une réservation pour le même rendez-vous.
+      ${meetAction}
+    `;
     msg.classList.add("success");
     bookingForm.reset();
     slotsContainer.innerHTML = "";
