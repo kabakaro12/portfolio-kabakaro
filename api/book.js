@@ -53,6 +53,12 @@ Réservation effectuée depuis portfolio-kabakaro.vercel.app`,
       start: { dateTime: start, timeZone: timezone() },
       end: { dateTime: end, timeZone: timezone() },
       attendees: [{ email }],
+      conferenceData: {
+        createRequest: {
+          requestId: `portfolio-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+          conferenceSolutionKey: { type: "hangoutsMeet" }
+        }
+      },
       reminders: {
         useDefault: false,
         overrides: [
@@ -63,7 +69,7 @@ Réservation effectuée depuis portfolio-kabakaro.vercel.app`,
     };
 
     const createRes = await fetch(
-      `${CALENDAR_API}/calendars/${encodeURIComponent(calendarId())}/events?sendUpdates=all`,
+      `${CALENDAR_API}/calendars/${encodeURIComponent(calendarId())}/events?sendUpdates=all&conferenceDataVersion=1`,
       {
         method: "POST",
         headers: {
@@ -80,7 +86,8 @@ Réservation effectuée depuis portfolio-kabakaro.vercel.app`,
     return res.status(201).json({
       ok: true,
       eventId: created.id,
-      htmlLink: created.htmlLink || null
+      htmlLink: created.htmlLink || null,
+      meetLink: created.hangoutLink || created.conferenceData?.entryPoints?.find(p => p.entryPointType === "video")?.uri || null
     });
   } catch (err) {
     console.error(err);
