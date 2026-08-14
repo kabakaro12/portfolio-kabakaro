@@ -315,3 +315,22 @@ footer{max-width:var(--max);margin:auto;padding:30px 24px 50px;border-top:1px so
   .availability-head{align-items:flex-start;flex-direction:column}
   #availabilityStatus{text-align:left}
 }
+
+
+/* Accès discret à l'espace administrateur */
+.admin-access-link{
+  display:inline-flex;
+  align-items:center;
+  gap:.45rem;
+  margin-top:1rem;
+  color:var(--muted, #94a3b8);
+  font-size:.9rem;
+  text-decoration:none;
+  opacity:.75;
+  transition:opacity .2s ease, color .2s ease;
+}
+.admin-access-link:hover,
+.admin-access-link:focus-visible{
+  opacity:1;
+  color:var(--accent, #39d1af);
+}

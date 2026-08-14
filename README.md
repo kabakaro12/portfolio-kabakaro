@@ -57,3 +57,11 @@ Fonctionnalités :
 - statistiques rapides.
 
 Le mot de passe n'est pas enregistré dans le code GitHub. Il doit uniquement être configuré dans Vercel.
+
+
+## Accès Administration — v16.2
+
+Un lien discret **Administration** a été ajouté au pied de page du portfolio.
+Il ouvre `/admin.html`.
+
+L'accès reste protégé côté serveur par la variable Vercel `ADMIN_PASSWORD`.

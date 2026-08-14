@@ -1,8 +1,8 @@
 {
   "name": "kabakaro-portfolio-v15",
-  "version": "16.1.0",
+  "version": "16.2.0",
   "private": true,
-  "description": "Portfolio Kabakaro avec espace admin rendez-vous, Google Calendar/Meet et notifications",
+  "description": "Portfolio Kabakaro avec espace admin rendez-vous et accès Administration depuis le portfolio",
   "engines": {
     "node": "22.x"
   }
