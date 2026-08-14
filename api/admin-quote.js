@@ -3,7 +3,7 @@ const { getAccessToken, calendarId, CALENDAR_API } = require("./_google");
 
 function authorized(req) {
   const expected = process.env.ADMIN_PASSWORD;
-  const provided = req.headers["x-admin-password"];
+  const provided = req.headers["x-admin-password"] || req.body?.adminPassword;
   if (!expected) throw new Error("Configuration manquante : ADMIN_PASSWORD");
   return typeof provided === "string" && provided === expected;
 }
