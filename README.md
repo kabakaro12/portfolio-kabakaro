@@ -157,3 +157,29 @@ Variables Vercel optionnelles pour personnaliser l'émetteur :
 - `QUOTE_ISSUER_ADDRESS`
 
 Important : le modèle PDF contient une note invitant à adapter les mentions fiscales, juridiques et les conditions de paiement à la situation réelle avant envoi au client.
+
+
+## Correctif connexion admin — v16.7.1
+
+Correction d'un bug d'initialisation JavaScript introduit avec la fenêtre de création de devis.
+
+Symptôme :
+- la page admin s'affichait ;
+- le bouton Se connecter ne déclenchait aucun appel API ;
+- les logs Vercel ne montraient pas `/api/admin-appointments`.
+
+Correction :
+- la fenêtre Devis est chargée avant le script JavaScript ;
+- des protections supplémentaires évitent qu'un élément manquant bloque toute la page admin.
+
+
+## Correctif PDF iPhone — v16.7.2
+
+Sur iPhone/Safari, le téléchargement automatique via un lien `download` peut être bloqué.
+
+La génération de devis fonctionne maintenant ainsi :
+- sur iPhone/iPad : le PDF s'ouvre directement dans Safari ;
+- utiliser ensuite **Partager → Enregistrer dans Fichiers** ;
+- sur ordinateur : téléchargement classique du PDF.
+
+Aucune nouvelle variable Vercel n'est nécessaire.

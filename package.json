@@ -1,8 +1,8 @@
 {
   "name": "kabakaro-portfolio-v15",
-  "version": "16.7.0",
+  "version": "16.7.2",
   "private": true,
-  "description": "Portfolio Kabakaro mini-CRM avec génération de devis PDF",
+  "description": "Portfolio Kabakaro CRM avec devis PDF compatible iPhone/Safari",
   "engines": {
     "node": "22.x"
   },

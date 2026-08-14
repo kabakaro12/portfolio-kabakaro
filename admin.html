@@ -269,9 +269,10 @@
 
       <div class="quote-actions">
         <button type="button" class="secondary" id="quoteCancel">Annuler</button>
-        <button type="submit" class="primary" id="quoteGenerate">Télécharger le devis PDF</button>
+        <button type="submit" class="primary" id="quoteGenerate">Générer / ouvrir le devis PDF</button>
       </div>
       <div class="error" id="quoteError"></div>
+<p class="sub" style="margin-top:10px">Sur iPhone : le PDF s’ouvre dans Safari. Utilise ensuite <strong>Partager → Enregistrer dans Fichiers</strong>.</p>
     </form>
   </div>
 
@@ -698,13 +699,24 @@ if ($("quoteForm")) $("quoteForm").addEventListener("submit",async e=>{
     const filename = match ? match[1] : "Devis-Kabakaro.pdf";
 
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),3000);
+    const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+    if (isiOS) {
+      // Safari iOS bloque souvent le téléchargement via <a download>.
+      // Ouvrir le PDF permet ensuite : Partager → Enregistrer dans Fichiers.
+      window.location.href = url;
+      setTimeout(()=>URL.revokeObjectURL(url), 60000);
+    } else {
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.target = "_blank";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),10000);
+    }
 
     const a = state.appointments.find(x=>x.id===eventId);
     if(a){
