@@ -272,7 +272,7 @@
         <button type="submit" class="primary" id="quoteGenerate">Générer / ouvrir le devis PDF</button>
       </div>
       <div class="error" id="quoteError"></div>
-<p class="sub" style="margin-top:10px">Sur iPhone : le PDF s’ouvre dans Safari. Utilise ensuite <strong>Partager → Enregistrer dans Fichiers</strong>.</p>
+<p class="sub" style="margin-top:10px">Sur iPhone : après génération, la feuille de partage s’ouvre avec <strong>Enregistrer dans Fichiers</strong>, <strong>Imprimer</strong>, AirDrop, etc.</p>
     </form>
   </div>
 
@@ -703,9 +703,28 @@ if ($("quoteForm")) $("quoteForm").addEventListener("submit",async e=>{
       (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
     if (isiOS) {
-      // Safari iOS bloque souvent le téléchargement via <a download>.
-      // Ouvrir le PDF permet ensuite : Partager → Enregistrer dans Fichiers.
-      window.location.href = url;
+      // Sur iPhone/iPad, utiliser la feuille de partage native.
+      // Elle donne directement accès à "Enregistrer dans Fichiers", "Imprimer", AirDrop, etc.
+      const file = new File([blob], filename, { type: "application/pdf" });
+
+      if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
+        try {
+          await navigator.share({
+            title: filename.replace(/\.pdf$/i, ""),
+            text: "Devis PDF",
+            files: [file]
+          });
+        } catch (shareError) {
+          // Si l'utilisateur ferme la feuille de partage, ne pas afficher une erreur bloquante.
+          if (shareError && shareError.name !== "AbortError") {
+            window.open(url, "_blank");
+          }
+        }
+      } else {
+        // Fallback Safari si le partage de fichiers n'est pas disponible.
+        window.open(url, "_blank");
+      }
+
       setTimeout(()=>URL.revokeObjectURL(url), 60000);
     } else {
       const link = document.createElement("a");
