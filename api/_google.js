@@ -7,6 +7,12 @@ function requireEnv(name) {
   return value;
 }
 
+function safeGoogleError(prefix, status, data) {
+  const code = data?.error || "unknown_error";
+  const description = data?.error_description || data?.message || "Aucun détail fourni par Google.";
+  return new Error(`${prefix} [HTTP ${status}] ${code}: ${description}`);
+}
+
 async function getAccessToken() {
   const clientId = requireEnv("GOOGLE_CLIENT_ID");
   const clientSecret = requireEnv("GOOGLE_CLIENT_SECRET");
@@ -25,10 +31,18 @@ async function getAccessToken() {
     body
   });
 
-  const data = await res.json();
-  if (!res.ok || !data.access_token) {
-    throw new Error("Impossible d'obtenir un jeton Google Calendar.");
+  let data = {};
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error(`Google OAuth [HTTP ${res.status}] réponse illisible.`);
   }
+
+  if (!res.ok || !data.access_token) {
+    // Diagnostic volontairement limité : aucun Client ID, secret, refresh token ou access token n'est journalisé.
+    throw safeGoogleError("Google OAuth", res.status, data);
+  }
+
   return data.access_token;
 }
 
@@ -40,4 +54,4 @@ function timezone() {
   return process.env.BOOKING_TIMEZONE || "Europe/Paris";
 }
 
-module.exports = { getAccessToken, calendarId, timezone, CALENDAR_API };
+module.exports = { getAccessToken, calendarId, timezone, CALENDAR_API, safeGoogleError };

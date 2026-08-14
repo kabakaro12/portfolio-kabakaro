@@ -1,4 +1,4 @@
-const { getAccessToken, calendarId, timezone, CALENDAR_API } = require("./_google");
+const { getAccessToken, calendarId, timezone, CALENDAR_API, safeGoogleError } = require("./_google");
 
 const SLOT_MINUTES = 30;
 const WORK_START = 9;    // 09:00
@@ -66,7 +66,14 @@ module.exports = async function handler(req, res) {
     });
 
     const data = await freeBusyRes.json();
-    if (!freeBusyRes.ok) throw new Error("Google Calendar n'a pas pu fournir les disponibilités.");
+    if (!freeBusyRes.ok) {
+      const apiError = data?.error || {};
+      throw safeGoogleError(
+        "Google Calendar FreeBusy",
+        freeBusyRes.status,
+        { error: apiError.status || apiError.code || "calendar_error", error_description: apiError.message }
+      );
+    }
 
     const busy = data.calendars?.[calendarId()]?.busy || [];
     const slots = [];
@@ -87,7 +94,10 @@ module.exports = async function handler(req, res) {
     res.setHeader("Cache-Control", "no-store");
     return res.status(200).json({ date, slots });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Le calendrier n'est pas encore configuré sur le serveur." });
+    console.error(`[availability] ${err?.message || err}`);
+    return res.status(500).json({
+      error: "Le calendrier n'est pas encore configuré sur le serveur.",
+      diagnostic: "Consultez les Runtime Logs Vercel pour le code Google exact."
+    });
   }
 };
