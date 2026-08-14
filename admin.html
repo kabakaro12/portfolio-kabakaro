@@ -88,7 +88,52 @@
     .pipeline-card .mini-links a{font-size:12px;text-decoration:none;padding:7px 9px;border-radius:9px;background:var(--panel2);border:1px solid var(--line)}
     .pipeline-card .followup-alert{margin-top:10px}
     .pipeline-empty{color:var(--muted);font-size:13px;padding:12px;text-align:center;border:1px dashed var(--line);border-radius:12px}
-    @media(max-width:900px){.pipeline{grid-template-columns:repeat(5,260px)}}
+
+    .pipeline-mobile-tabs{
+      display:none;
+      gap:8px;
+      overflow-x:auto;
+      padding:4px 0 10px;
+      margin-bottom:10px;
+      -webkit-overflow-scrolling:touch;
+    }
+    .pipeline-mobile-tabs button{
+      flex:0 0 auto;
+      white-space:nowrap;
+      background:var(--panel2);
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:10px 12px;
+      font-size:13px;
+      font-weight:900;
+    }
+    .pipeline-mobile-tabs button.active{
+      background:var(--accent);
+      color:#062018;
+      border-color:transparent;
+    }
+    .pipeline-mobile-summary{
+      display:none;
+      background:rgba(14,27,45,.9);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 14px;
+      margin-bottom:12px;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+    }
+    .pipeline-mobile-summary strong{font-size:18px}
+    .pipeline-mobile-summary span{color:var(--muted);font-size:13px}
+    @media(max-width:900px){
+      .pipeline-mobile-tabs{display:flex}
+      .pipeline-mobile-summary{display:flex}
+      .pipeline{display:block !important;overflow:visible}
+      .pipeline-col{display:none;min-height:0}
+      .pipeline-col.mobile-active{display:block}
+    }
+
 
     @media(max-width:760px){.hero{display:block}.actions{margin-top:16px}.stats{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr}.meta{grid-template-columns:1fr}}
   </style>
@@ -160,6 +205,8 @@
       </select>
     </section>
 <section id="appointments" class="list"><div class="loading">Connexion requise.</div></section>
+    <div id="pipelineMobileTabs" class="pipeline-mobile-tabs"></div>
+    <div id="pipelineMobileSummary" class="pipeline-mobile-summary"></div>
     <section id="pipeline" class="pipeline" style="display:none"></section>
   </main>
 
@@ -224,6 +271,7 @@ async function loadAppointments(){
 
 
 const PIPELINE_STAGES = ["Nouveau","Contacté","Devis envoyé","Gagné","Perdu"];
+let activePipelineStage = localStorage.getItem("kk_pipeline_stage") || "Nouveau";
 
 function pipelineCard(a){
   const due = followUpState(a)==="due" && !["Gagné","Perdu"].includes(a.crmStatus);
@@ -252,11 +300,32 @@ function pipelineCard(a){
 function renderPipeline(){
   const rows = filtered();
   const root = $("pipeline");
+  const tabs = $("pipelineMobileTabs");
+  const summary = $("pipelineMobileSummary");
+
+  if(!PIPELINE_STAGES.includes(activePipelineStage)) activePipelineStage = "Nouveau";
+
+  tabs.innerHTML = PIPELINE_STAGES.map(stage=>{
+    const items = rows.filter(a=>a.crmStatus===stage);
+    const total = items.reduce((s,a)=>s+Number(a.crmEstimatedAmount||0),0);
+    return `<button type="button" data-stage="${stage}" class="${activePipelineStage===stage?"active":""}">
+      ${stage} · ${items.length}${total ? ` · ${euro(total)}` : ""}
+    </button>`;
+  }).join("");
+
+  tabs.querySelectorAll("button").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      activePipelineStage = btn.dataset.stage;
+      localStorage.setItem("kk_pipeline_stage", activePipelineStage);
+      renderPipeline();
+    });
+  });
+
   root.innerHTML = PIPELINE_STAGES.map(stage=>{
     const items = rows.filter(a=>a.crmStatus===stage);
     const total = items.reduce((s,a)=>s+Number(a.crmEstimatedAmount||0),0);
     return `
-      <section class="pipeline-col">
+      <section class="pipeline-col ${activePipelineStage===stage?"mobile-active":""}" data-stage="${stage}">
         <div class="pipeline-head">
           <h3>${stage}</h3>
           <span class="pipeline-count">${items.length}${total ? ` · ${euro(total)}` : ""}</span>
@@ -266,6 +335,13 @@ function renderPipeline(){
         </div>
       </section>`;
   }).join("");
+
+  const activeItems = rows.filter(a=>a.crmStatus===activePipelineStage);
+  const activeTotal = activeItems.reduce((s,a)=>s+Number(a.crmEstimatedAmount||0),0);
+  summary.innerHTML = `
+    <div><strong>${activePipelineStage}</strong><br><span>${activeItems.length} prospect${activeItems.length>1?"s":""}</span></div>
+    <div style="text-align:right"><strong>${euro(activeTotal)}</strong><br><span>Montant estimé</span></div>
+  `;
 
   document.querySelectorAll(".pipeline-stage-select").forEach(sel=>{
     sel.addEventListener("change", async ()=>{
@@ -292,6 +368,8 @@ function renderPipeline(){
         const data = await r.json();
         if(!r.ok) throw new Error(data.error || "Erreur serveur");
         item.crmStatus = data.crmStatus;
+        activePipelineStage = data.crmStatus;
+        localStorage.setItem("kk_pipeline_stage", activePipelineStage);
         render();
         renderPipeline();
       }catch(e){
@@ -311,6 +389,8 @@ function setView(mode){
   if(mode==="pipeline"){
     list.style.display="none";
     pipe.style.display="grid";
+    $("pipelineMobileTabs").style.display="";
+    $("pipelineMobileSummary").style.display="";
     listBtn.classList.remove("active");
     pipeBtn.classList.add("active");
     renderPipeline();
@@ -318,6 +398,8 @@ function setView(mode){
   }else{
     list.style.display="grid";
     pipe.style.display="none";
+    $("pipelineMobileTabs").style.display="none";
+    $("pipelineMobileSummary").style.display="none";
     pipeBtn.classList.remove("active");
     listBtn.classList.add("active");
     localStorage.setItem("kk_admin_view","list");
