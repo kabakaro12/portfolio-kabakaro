@@ -1,8 +1,8 @@
 {
-  "name": "kabakaro-portfolio-v13",
-  "version": "13.0.0",
+  "name": "kabakaro-portfolio-v15",
+  "version": "15.0.0",
   "private": true,
-  "description": "Portfolio Kabakaro avec prise de rendez-vous Google Calendar",
+  "description": "Portfolio Kabakaro avec Google Calendar, Google Meet, projets et compétences mis à jour",
   "engines": {
     "node": "22.x"
   }

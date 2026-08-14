@@ -18,7 +18,7 @@ document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
 
 document.getElementById("year").textContent = new Date().getFullYear();
 
-// V13 — Rendez-vous connectés à Google Calendar via API Vercel
+// V15 — Rendez-vous Google Calendar + lien Google Meet automatique
 const bookingDate = document.getElementById("bookingDate");
 const slotsContainer = document.getElementById("slots");
 const selectedSlotInput = document.getElementById("selectedSlot");
@@ -127,7 +127,11 @@ bookingForm?.addEventListener("submit", async (e) => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Impossible de créer le rendez-vous.");
 
-    msg.textContent = `Rendez-vous confirmé pour ${slot.label}. Un événement a été ajouté au calendrier.`;
+    if (data.meetLink) {
+      msg.innerHTML = `Rendez-vous confirmé pour ${slot.label}. <a href="${data.meetLink}" target="_blank" rel="noopener">Ouvrir le lien Google Meet ↗</a>`;
+    } else {
+      msg.textContent = `Rendez-vous confirmé pour ${slot.label}. L’invitation Google Calendar a été envoyée.`;
+    }
     msg.classList.add("success");
     bookingForm.reset();
     slotsContainer.innerHTML = "";

@@ -109,3 +109,18 @@ Le backend utilise un refresh token Google pour consulter les disponibilités et
 6. Redéployer et tester la section Rendez-vous.
 
 Ne jamais publier le client secret ou le refresh token dans GitHub.
+
+
+## V15 — Portfolio finalisé
+
+- Ajout de Java dans les compétences et la présentation.
+- Mise en avant du jeu d’échecs Full Stack Java comme projet principal.
+- Ajout / mise à jour de G-Transport, FlexMusic, Proptech Solutions et 3D Services.
+- Correction de l’expérience Proptech Solutions : salarié avec participation à la maintenance du site internet.
+- Suppression des boutons morts « Prototype en préparation ».
+- Création automatique d’une visioconférence Google Meet dans `/api/book`.
+- L’invitation Calendar est envoyée à l’adresse du prospect avec le lien Meet.
+
+### Google Meet
+
+La création de l’événement utilise `conferenceDataVersion=1` et `conferenceData.createRequest` avec Google Meet. Le scope Calendar Events utilisé en V14 couvre la création de la conférence associée à l’événement.
