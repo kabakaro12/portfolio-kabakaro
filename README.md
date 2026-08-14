@@ -37,3 +37,23 @@ Après modification des variables Vercel, lancer un Redeploy.
 ## Déploiement
 
 Le projet est prévu pour être déployé sur Vercel depuis le dépôt GitHub existant.
+
+
+## Espace administrateur Rendez-vous — v16.1
+
+URL :
+- `/admin.html`
+
+Nouvelle variable Vercel obligatoire :
+- `ADMIN_PASSWORD` : choisis un mot de passe long et unique.
+
+Fonctionnalités :
+- accès protégé par mot de passe ;
+- liste des rendez-vous du portfolio ;
+- client, e-mail, type, projet, date et heure ;
+- statut Google Calendar (confirmé, en attente, refusé, passé, etc.) ;
+- accès direct au Google Meet et à Google Calendar ;
+- recherche et filtres ;
+- statistiques rapides.
+
+Le mot de passe n'est pas enregistré dans le code GitHub. Il doit uniquement être configuré dans Vercel.

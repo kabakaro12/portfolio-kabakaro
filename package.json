@@ -1,8 +1,8 @@
 {
   "name": "kabakaro-portfolio-v15",
-  "version": "16.0.0",
+  "version": "16.1.0",
   "private": true,
-  "description": "Version finale 2026 du portfolio Kabakaro avec Google Calendar, Google Meet, confirmation client et notifications de rendez-vous",
+  "description": "Portfolio Kabakaro avec espace admin rendez-vous, Google Calendar/Meet et notifications",
   "engines": {
     "node": "22.x"
   }

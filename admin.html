@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Administration — Rendez-vous | Kabakaro</title>
+  <link rel="icon" href="favicon.svg">
+  <style>
+    :root{
+      --bg:#07111f;--panel:#0e1b2d;--panel2:#13243a;--text:#f6f8fb;--muted:#97a6bb;
+      --line:#223752;--accent:#39d1af;--danger:#ff6b78;--warning:#f3bf55;--ok:#65d58b;
+      --radius:18px
+    }
+    *{box-sizing:border-box} body{margin:0;background:linear-gradient(145deg,#06101c,#0a1627 50%,#07111f);
+      color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+    a{color:inherit} .wrap{width:min(1180px,calc(100% - 28px));margin:auto;padding:28px 0 56px}
+    .top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:28px}
+    .brand{display:flex;align-items:center;gap:12px}.logo{font-weight:900;font-size:25px}.dot{color:var(--accent)}
+    .back{border:1px solid var(--line);padding:10px 14px;border-radius:12px;text-decoration:none;color:var(--muted)}
+    .hero{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:22px}
+    h1{font-size:clamp(30px,5vw,48px);line-height:1.05;margin:0 0 8px}.sub{color:var(--muted);margin:0}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    button,.btn{border:0;border-radius:12px;padding:11px 15px;font-weight:800;cursor:pointer}
+    .primary{background:var(--accent);color:#062018}.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
+    .stat{background:rgba(14,27,45,.85);border:1px solid var(--line);padding:18px;border-radius:var(--radius)}
+    .stat small{color:var(--muted)}.stat strong{display:block;font-size:30px;margin-top:6px}
+    .filters{display:grid;grid-template-columns:1fr 190px 190px;gap:10px;margin:18px 0}
+    input,select{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px 14px;font-size:15px}
+    .list{display:grid;gap:12px}.card{background:rgba(14,27,45,.92);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+    .cardtop{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.when{font-weight:900;font-size:18px}
+    .badge{padding:7px 10px;border-radius:999px;background:#182b43;color:#cfe1f5;font-size:12px;font-weight:900}
+    .badge.ok{background:rgba(101,213,139,.12);color:var(--ok)} .badge.wait{background:rgba(243,191,85,.12);color:var(--warning)}
+    .badge.bad{background:rgba(255,107,120,.12);color:var(--danger)}
+    .meta{display:grid;grid-template-columns:1fr 1fr;gap:10px 22px;margin:14px 0;color:var(--muted)}
+    .meta b{color:var(--text)}.project{white-space:pre-wrap;background:#0a1728;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:12px}
+    .links{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.links a{text-decoration:none;padding:10px 12px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);font-weight:800}
+    .empty,.loading{padding:34px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--radius)}
+    .login{position:fixed;inset:0;background:rgba(2,8,16,.88);backdrop-filter:blur(9px);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}
+    .loginbox{width:min(430px,100%);background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:26px}
+    .loginbox h2{margin-top:0}.error{color:#ff8994;margin:10px 0 0;min-height:22px}
+    @media(max-width:760px){.hero{display:block}.actions{margin-top:16px}.stats{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr}.meta{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="login" id="login">
+    <form class="loginbox" id="loginForm">
+      <div class="logo">KK<span class="dot">.</span></div>
+      <h2>Espace administrateur</h2>
+      <p class="sub">Entre ton mot de passe pour consulter les rendez-vous du portfolio.</p>
+      <input id="password" type="password" autocomplete="current-password" placeholder="Mot de passe administrateur" required>
+      <button class="primary" style="width:100%;margin-top:12px" type="submit">Se connecter</button>
+      <div class="error" id="loginError"></div>
+    </form>
+  </div>
+
+  <main class="wrap">
+    <div class="top">
+      <div class="brand"><div class="logo">KK<span class="dot">.</span></div><span class="sub">Administration</span></div>
+      <a class="back" href="/">← Portfolio</a>
+    </div>
+
+    <section class="hero">
+      <div>
+        <h1>Rendez-vous clients</h1>
+        <p class="sub">Suivi des réservations Google Calendar créées depuis le portfolio.</p>
+      </div>
+      <div class="actions">
+        <button class="secondary" id="refreshBtn">Actualiser</button>
+        <button class="secondary" id="logoutBtn">Déconnexion</button>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat"><small>Total affiché</small><strong id="statTotal">0</strong></div>
+      <div class="stat"><small>À venir</small><strong id="statUpcoming">0</strong></div>
+      <div class="stat"><small>Confirmés</small><strong id="statConfirmed">0</strong></div>
+      <div class="stat"><small>En attente</small><strong id="statPending">0</strong></div>
+    </section>
+
+    <section class="filters">
+      <input id="search" placeholder="Rechercher un client, e-mail, projet…">
+      <select id="statusFilter">
+        <option value="">Tous les statuts</option>
+        <option>Confirmé</option><option>En attente</option><option>Peut-être</option>
+        <option>Refusé</option><option>À venir</option><option>Passé</option><option>Annulé</option>
+      </select>
+      <select id="typeFilter"><option value="">Tous les types</option></select>
+    </section>
+
+    <section id="appointments" class="list"><div class="loading">Connexion requise.</div></section>
+  </main>
+
+<script>
+const state = { password: sessionStorage.getItem("kk_admin_password") || "", appointments: [] };
+const $ = id => document.getElementById(id);
+const login = $("login"), loginForm = $("loginForm"), loginError = $("loginError");
+
+function formatDate(value){
+  if(!value) return "—";
+  return new Intl.DateTimeFormat("fr-FR",{weekday:"short",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",timeZone:"Europe/Paris"}).format(new Date(value));
+}
+function badgeClass(status){
+  if(["Confirmé","À venir"].includes(status)) return "ok";
+  if(["En attente","Peut-être"].includes(status)) return "wait";
+  if(["Refusé","Annulé"].includes(status)) return "bad";
+  return "";
+}
+function esc(s=""){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+async function loadAppointments(){
+  $("appointments").innerHTML = '<div class="loading">Chargement des rendez-vous…</div>';
+  try{
+    const r = await fetch("/api/admin-appointments",{headers:{"x-admin-password":state.password}});
+    const data = await r.json();
+    if(r.status===401){ throw new Error("AUTH"); }
+    if(!r.ok) throw new Error(data.error || "Erreur serveur");
+    state.appointments = data.appointments || [];
+    login.style.display = "none";
+    sessionStorage.setItem("kk_admin_password", state.password);
+    buildTypeFilter();
+    render();
+  }catch(e){
+    if(e.message==="AUTH"){
+      sessionStorage.removeItem("kk_admin_password");
+      login.style.display = "flex";
+      loginError.textContent = "Mot de passe incorrect.";
+      $("appointments").innerHTML = '<div class="loading">Connexion requise.</div>';
+    }else{
+      $("appointments").innerHTML = `<div class="empty">${esc(e.message)}</div>`;
+    }
+  }
+}
+
+function buildTypeFilter(){
+  const sel = $("typeFilter"), current = sel.value;
+  const types = [...new Set(state.appointments.map(x=>x.type).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">Tous les types</option>'+types.map(t=>`<option>${esc(t)}</option>`).join("");
+  sel.value = current;
+}
+function filtered(){
+  const q = $("search").value.trim().toLowerCase();
+  const st = $("statusFilter").value, ty = $("typeFilter").value;
+  return state.appointments.filter(a=>{
+    const hay=[a.name,a.email,a.project,a.type].join(" ").toLowerCase();
+    return (!q || hay.includes(q)) && (!st || a.status===st) && (!ty || a.type===ty);
+  });
+}
+function render(){
+  const rows = filtered();
+  $("statTotal").textContent = rows.length;
+  $("statUpcoming").textContent = rows.filter(a=>["À venir","Confirmé","En attente","Peut-être"].includes(a.status) && new Date(a.start)>=new Date()).length;
+  $("statConfirmed").textContent = rows.filter(a=>a.status==="Confirmé").length;
+  $("statPending").textContent = rows.filter(a=>a.status==="En attente").length;
+
+  if(!rows.length){ $("appointments").innerHTML='<div class="empty">Aucun rendez-vous ne correspond aux filtres.</div>'; return; }
+  $("appointments").innerHTML = rows.map(a=>`
+    <article class="card">
+      <div class="cardtop">
+        <div>
+          <div class="when">${esc(formatDate(a.start))}</div>
+          <div class="sub">${esc(a.type || "Rendez-vous")}</div>
+        </div>
+        <span class="badge ${badgeClass(a.status)}">${esc(a.status)}</span>
+      </div>
+      <div class="meta">
+        <div><span>Client</span><br><b>${esc(a.name || "—")}</b></div>
+        <div><span>E-mail</span><br><b>${esc(a.email || "—")}</b></div>
+        <div><span>Début</span><br><b>${esc(formatDate(a.start))}</b></div>
+        <div><span>Fin</span><br><b>${esc(formatDate(a.end))}</b></div>
+      </div>
+      ${a.project ? `<div class="project"><b>Projet</b><br>${esc(a.project)}</div>` : ""}
+      <div class="links">
+        ${a.meetLink ? `<a href="${esc(a.meetLink)}" target="_blank" rel="noopener">Google Meet ↗</a>` : ""}
+        ${a.calendarLink ? `<a href="${esc(a.calendarLink)}" target="_blank" rel="noopener">Google Calendar ↗</a>` : ""}
+        ${a.email ? `<a href="mailto:${esc(a.email)}">Écrire au client</a>` : ""}
+      </div>
+    </article>`).join("");
+}
+
+loginForm.addEventListener("submit", e=>{
+  e.preventDefault();
+  state.password = $("password").value;
+  loginError.textContent = "";
+  loadAppointments();
+});
+$("refreshBtn").addEventListener("click",loadAppointments);
+$("logoutBtn").addEventListener("click",()=>{sessionStorage.removeItem("kk_admin_password");state.password="";login.style.display="flex";$("password").value="";});
+["search","statusFilter","typeFilter"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",render));
+
+if(state.password){ $("password").value=state.password; loadAppointments(); }
+</script>
+</body>
+</html>
