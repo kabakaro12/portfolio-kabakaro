@@ -94,3 +94,18 @@ Ajouter l'assistant IA qui :
 2. appelle `/api/availability` ;
 3. propose les créneaux ;
 4. confirme via `/api/book`.
+
+## Google Calendar — finalisation OAuth (V14)
+
+Le backend utilise un refresh token Google pour consulter les disponibilités et créer les rendez-vous.
+
+1. Dans Google Cloud OAuth, autoriser les scopes :
+   - `https://www.googleapis.com/auth/calendar.events`
+   - `https://www.googleapis.com/auth/calendar.events.freebusy`
+2. Dans Vercel, configurer `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` et `GOOGLE_REDIRECT_URI`.
+3. Déployer la V14.
+4. Ouvrir `https://portfolio-kabakaro.vercel.app/api/google-calendar/auth` et autoriser le compte Google.
+5. Copier le refresh token affiché vers la variable Vercel `GOOGLE_REFRESH_TOKEN`.
+6. Redéployer et tester la section Rendez-vous.
+
+Ne jamais publier le client secret ou le refresh token dans GitHub.
