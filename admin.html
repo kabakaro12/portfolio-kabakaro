@@ -226,6 +226,55 @@
     <section id="pipeline" class="pipeline" style="display:none"></section>
   </main>
 
+
+
+  <div class="quote-modal" id="quoteModal" aria-hidden="true">
+    <form class="quote-box" id="quoteForm">
+      <h2>Créer un devis PDF</h2>
+      <p class="sub" id="quoteClientLabel">Prospect</p>
+
+      <input type="hidden" id="quoteEventId">
+
+      <div class="quote-grid">
+        <div>
+          <label>Montant HT (€)</label>
+          <input id="quoteAmount" type="number" min="1" step="50" inputmode="decimal" required>
+        </div>
+        <div>
+          <label>TVA (%)</label>
+          <input id="quoteVat" type="number" min="0" max="100" step="0.1" value="0">
+        </div>
+      </div>
+
+      <div class="quote-grid">
+        <div>
+          <label>Validité du devis (jours)</label>
+          <input id="quoteValidity" type="number" min="1" max="365" value="30">
+        </div>
+        <div>
+          <label>Total TTC estimé</label>
+          <div class="quote-total"><strong id="quoteTotal">0 €</strong></div>
+        </div>
+      </div>
+
+      <label>Description de la prestation</label>
+      <textarea id="quoteDescription" placeholder="Ex. Création d'un site vitrine responsive avec formulaire de contact…"></textarea>
+
+      <label>Note interne (optionnel)</label>
+      <textarea id="quoteNotes" placeholder="Cette note reste dans le CRM et n'apparaît pas sur le devis."></textarea>
+
+      <p class="sub" style="margin-top:12px">
+        Après génération, le prospect passera automatiquement au statut <strong>Devis envoyé</strong>.
+      </p>
+
+      <div class="quote-actions">
+        <button type="button" class="secondary" id="quoteCancel">Annuler</button>
+        <button type="submit" class="primary" id="quoteGenerate">Télécharger le devis PDF</button>
+      </div>
+      <div class="error" id="quoteError"></div>
+    </form>
+  </div>
+
 <script>
 const state = { password: sessionStorage.getItem("kk_admin_password") || "", appointments: [] };
 const $ = id => document.getElementById(id);
@@ -601,11 +650,11 @@ function closeQuote(){
   quoteModal.classList.remove("open");
   quoteModal.setAttribute("aria-hidden","true");
 }
-$("quoteCancel").addEventListener("click",closeQuote);
-quoteModal.addEventListener("click",e=>{if(e.target===quoteModal) closeQuote();});
-["quoteAmount","quoteVat"].forEach(id=>$(id).addEventListener("input",quoteTotalRefresh));
+if ($("quoteCancel")) $("quoteCancel").addEventListener("click",closeQuote);
+if (quoteModal) quoteModal.addEventListener("click",e=>{if(e.target===quoteModal) closeQuote();});
+["quoteAmount","quoteVat"].forEach(id=>{ if ($(id)) $(id).addEventListener("input",quoteTotalRefresh); });
 
-$("quoteForm").addEventListener("submit",async e=>{
+if ($("quoteForm")) $("quoteForm").addEventListener("submit",async e=>{
   e.preventDefault();
   const eventId = $("quoteEventId").value;
   const button = $("quoteGenerate");
@@ -692,53 +741,5 @@ $("pipelineViewBtn").addEventListener("click",()=>setView("pipeline"));
 
 if(state.password){ $("password").value=state.password; loadAppointments(); }
 </script>
-
-  <div class="quote-modal" id="quoteModal" aria-hidden="true">
-    <form class="quote-box" id="quoteForm">
-      <h2>Créer un devis PDF</h2>
-      <p class="sub" id="quoteClientLabel">Prospect</p>
-
-      <input type="hidden" id="quoteEventId">
-
-      <div class="quote-grid">
-        <div>
-          <label>Montant HT (€)</label>
-          <input id="quoteAmount" type="number" min="1" step="50" inputmode="decimal" required>
-        </div>
-        <div>
-          <label>TVA (%)</label>
-          <input id="quoteVat" type="number" min="0" max="100" step="0.1" value="0">
-        </div>
-      </div>
-
-      <div class="quote-grid">
-        <div>
-          <label>Validité du devis (jours)</label>
-          <input id="quoteValidity" type="number" min="1" max="365" value="30">
-        </div>
-        <div>
-          <label>Total TTC estimé</label>
-          <div class="quote-total"><strong id="quoteTotal">0 €</strong></div>
-        </div>
-      </div>
-
-      <label>Description de la prestation</label>
-      <textarea id="quoteDescription" placeholder="Ex. Création d'un site vitrine responsive avec formulaire de contact…"></textarea>
-
-      <label>Note interne (optionnel)</label>
-      <textarea id="quoteNotes" placeholder="Cette note reste dans le CRM et n'apparaît pas sur le devis."></textarea>
-
-      <p class="sub" style="margin-top:12px">
-        Après génération, le prospect passera automatiquement au statut <strong>Devis envoyé</strong>.
-      </p>
-
-      <div class="quote-actions">
-        <button type="button" class="secondary" id="quoteCancel">Annuler</button>
-        <button type="submit" class="primary" id="quoteGenerate">Télécharger le devis PDF</button>
-      </div>
-      <div class="error" id="quoteError"></div>
-    </form>
-  </div>
-
 </body>
 </html>
