@@ -98,7 +98,9 @@ module.exports = async function handler(req, res) {
           created: event.created || null,
           updated: event.updated || null,
           crmStatus: event.extendedProperties?.private?.crmStatus || "Nouveau",
-          crmNotes: event.extendedProperties?.private?.crmNotes || ""
+          crmNotes: event.extendedProperties?.private?.crmNotes || "",
+          crmFollowUpDate: event.extendedProperties?.private?.crmFollowUpDate || "",
+          crmEstimatedAmount: Number(event.extendedProperties?.private?.crmEstimatedAmount || 0)
         };
       });
 
