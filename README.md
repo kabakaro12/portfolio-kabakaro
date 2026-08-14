@@ -65,3 +65,20 @@ Un lien discret **Administration** a été ajouté au pied de page du portfolio.
 Il ouvre `/admin.html`.
 
 L'accès reste protégé côté serveur par la variable Vercel `ADMIN_PASSWORD`.
+
+
+## Mini-CRM — v16.3
+
+L'espace `/admin.html` permet maintenant de gérer le suivi commercial de chaque rendez-vous :
+
+- **Nouveau**
+- **Contacté**
+- **Devis envoyé**
+- **Gagné**
+- **Perdu**
+- notes internes libres
+- filtre par statut commercial
+- recherche dans les notes
+
+Les données CRM sont stockées dans les `extendedProperties.private` de l'événement Google Calendar.
+Elles restent donc disponibles après un redéploiement Vercel et ne sont pas visibles par le client dans son invitation.

@@ -1,8 +1,8 @@
 {
   "name": "kabakaro-portfolio-v15",
-  "version": "16.2.0",
+  "version": "16.3.0",
   "private": true,
-  "description": "Portfolio Kabakaro avec espace admin rendez-vous et accès Administration depuis le portfolio",
+  "description": "Portfolio Kabakaro avec mini-CRM rendez-vous, notes internes et pipeline commercial",
   "engines": {
     "node": "22.x"
   }

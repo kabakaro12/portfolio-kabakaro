@@ -26,7 +26,7 @@
     .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
     .stat{background:rgba(14,27,45,.85);border:1px solid var(--line);padding:18px;border-radius:var(--radius)}
     .stat small{color:var(--muted)}.stat strong{display:block;font-size:30px;margin-top:6px}
-    .filters{display:grid;grid-template-columns:1fr 190px 190px;gap:10px;margin:18px 0}
+    .filters{display:grid;grid-template-columns:1fr 170px 170px 190px;gap:10px;margin:18px 0}
     input,select{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px 14px;font-size:15px}
     .list{display:grid;gap:12px}.card{background:rgba(14,27,45,.92);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
     .cardtop{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.when{font-weight:900;font-size:18px}
@@ -40,6 +40,16 @@
     .login{position:fixed;inset:0;background:rgba(2,8,16,.88);backdrop-filter:blur(9px);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}
     .loginbox{width:min(430px,100%);background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:26px}
     .loginbox h2{margin-top:0}.error{color:#ff8994;margin:10px 0 0;min-height:22px}
+
+    .crm{margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+    .crmgrid{display:grid;grid-template-columns:220px 1fr auto;gap:10px;align-items:end}
+    .crm label{display:block;color:var(--muted);font-size:12px;font-weight:800;margin-bottom:6px}
+    .crm textarea{width:100%;min-height:86px;resize:vertical;background:#0a1728;border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px 14px;font:inherit}
+    .savecrm{background:var(--accent);color:#062018;min-height:44px}
+    .savecrm[disabled]{opacity:.6;cursor:wait}
+    .crmstatus{font-size:12px;color:var(--muted);margin-top:8px;min-height:18px}
+    @media(max-width:760px){.crmgrid{grid-template-columns:1fr}.savecrm{width:100%}}
+
     @media(max-width:760px){.hero{display:block}.actions{margin-top:16px}.stats{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr}.meta{grid-template-columns:1fr}}
   </style>
 </head>
@@ -87,6 +97,14 @@
         <option>Refusé</option><option>À venir</option><option>Passé</option><option>Annulé</option>
       </select>
       <select id="typeFilter"><option value="">Tous les types</option></select>
+      <select id="crmFilter">
+        <option value="">Tous les suivis commerciaux</option>
+        <option>Nouveau</option>
+        <option>Contacté</option>
+        <option>Devis envoyé</option>
+        <option>Gagné</option>
+        <option>Perdu</option>
+      </select>
     </section>
 
     <section id="appointments" class="list"><div class="loading">Connexion requise.</div></section>
@@ -141,10 +159,10 @@ function buildTypeFilter(){
 }
 function filtered(){
   const q = $("search").value.trim().toLowerCase();
-  const st = $("statusFilter").value, ty = $("typeFilter").value;
+  const st = $("statusFilter").value, ty = $("typeFilter").value, crm = $("crmFilter").value;
   return state.appointments.filter(a=>{
-    const hay=[a.name,a.email,a.project,a.type].join(" ").toLowerCase();
-    return (!q || hay.includes(q)) && (!st || a.status===st) && (!ty || a.type===ty);
+    const hay=[a.name,a.email,a.project,a.type,a.crmStatus,a.crmNotes].join(" ").toLowerCase();
+    return (!q || hay.includes(q)) && (!st || a.status===st) && (!ty || a.type===ty) && (!crm || a.crmStatus===crm);
   });
 }
 function render(){
@@ -176,7 +194,79 @@ function render(){
         ${a.calendarLink ? `<a href="${esc(a.calendarLink)}" target="_blank" rel="noopener">Google Calendar ↗</a>` : ""}
         ${a.email ? `<a href="mailto:${esc(a.email)}">Écrire au client</a>` : ""}
       </div>
+
+      <div class="crm">
+        <div class="crmgrid">
+          <div>
+            <label>Suivi commercial</label>
+            <select class="crm-select" data-id="${esc(a.id)}">
+              ${["Nouveau","Contacté","Devis envoyé","Gagné","Perdu"].map(s => `<option ${a.crmStatus===s?"selected":""}>${s}</option>`).join("")}
+            </select>
+          </div>
+          <div>
+            <label>Notes internes</label>
+            <textarea class="crm-notes" data-id="${esc(a.id)}" placeholder="Ex. Client rappelé, budget annoncé, prochaine action…">${esc(a.crmNotes || "")}</textarea>
+          </div>
+          <div>
+            <button class="savecrm" data-id="${esc(a.id)}">Enregistrer</button>
+          </div>
+        </div>
+        <div class="crmstatus" id="crm-msg-${esc(a.id)}"></div>
+      </div>
     </article>`).join("");
+
+  document.querySelectorAll(".savecrm").forEach(btn=>{
+    btn.addEventListener("click",()=>saveCRM(btn.dataset.id, btn));
+  });
+}
+
+
+async function saveCRM(eventId, button){
+  const select = document.querySelector(`.crm-select[data-id="${CSS.escape(eventId)}"]`);
+  const notes = document.querySelector(`.crm-notes[data-id="${CSS.escape(eventId)}"]`);
+  const msg = document.getElementById(`crm-msg-${eventId}`);
+  if(!select || !notes) return;
+
+  button.disabled = true;
+  const oldText = button.textContent;
+  button.textContent = "Enregistrement…";
+  if(msg) msg.textContent = "";
+
+  try{
+    const r = await fetch("/api/admin-appointment-update",{
+      method:"PATCH",
+      headers:{
+        "Content-Type":"application/json",
+        "x-admin-password":state.password
+      },
+      body:JSON.stringify({
+        eventId,
+        crmStatus:select.value,
+        crmNotes:notes.value
+      })
+    });
+    const data = await r.json();
+    if(r.status===401) throw new Error("AUTH");
+    if(!r.ok) throw new Error(data.error || "Erreur serveur");
+
+    const item = state.appointments.find(x=>x.id===eventId);
+    if(item){
+      item.crmStatus = data.crmStatus;
+      item.crmNotes = data.crmNotes;
+    }
+    if(msg) msg.textContent = "✓ Suivi enregistré";
+  }catch(e){
+    if(e.message==="AUTH"){
+      sessionStorage.removeItem("kk_admin_password");
+      login.style.display="flex";
+      loginError.textContent="Session expirée. Reconnecte-toi.";
+    }else if(msg){
+      msg.textContent = "Erreur : " + e.message;
+    }
+  }finally{
+    button.disabled = false;
+    button.textContent = oldText;
+  }
 }
 
 loginForm.addEventListener("submit", e=>{
@@ -187,7 +277,7 @@ loginForm.addEventListener("submit", e=>{
 });
 $("refreshBtn").addEventListener("click",loadAppointments);
 $("logoutBtn").addEventListener("click",()=>{sessionStorage.removeItem("kk_admin_password");state.password="";login.style.display="flex";$("password").value="";});
-["search","statusFilter","typeFilter"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",render));
+["search","statusFilter","typeFilter","crmFilter"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",render));
 
 if(state.password){ $("password").value=state.password; loadAppointments(); }
 </script>
