@@ -272,7 +272,7 @@
         <button type="submit" class="primary" id="quoteGenerate">Générer / ouvrir le devis PDF</button>
       </div>
       <div class="error" id="quoteError"></div>
-<p class="sub" style="margin-top:10px">Sur iPhone : un nouvel onglet s’ouvre pendant la génération. Le PDF y apparaîtra ensuite avec les options natives <strong>Partager</strong>, <strong>Imprimer</strong> et <strong>Enregistrer dans Fichiers</strong>.</p>
+<p class="sub" style="margin-top:10px">Sur iPhone : le devis s’ouvre directement dans un nouvel onglet Safari en tant que vrai PDF. Utilise ensuite le bouton <strong>Partager</strong> pour <strong>Enregistrer dans Fichiers</strong> ou <strong>Imprimer</strong>.</p>
     </form>
   </div>
 
@@ -655,126 +655,66 @@ if ($("quoteCancel")) $("quoteCancel").addEventListener("click",closeQuote);
 if (quoteModal) quoteModal.addEventListener("click",e=>{if(e.target===quoteModal) closeQuote();});
 ["quoteAmount","quoteVat"].forEach(id=>{ if ($(id)) $(id).addEventListener("input",quoteTotalRefresh); });
 
-if ($("quoteForm")) $("quoteForm").addEventListener("submit",async e=>{
+if ($("quoteForm")) $("quoteForm").addEventListener("submit", e=>{
   e.preventDefault();
+
   const eventId = $("quoteEventId").value;
+  const amountHT = Number($("quoteAmount").value || 0);
 
-  const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-
-  // IMPORTANT iPhone/Safari:
-  // ouvrir l'onglet pendant le clic utilisateur, AVANT tout await/fetch.
-  // Sinon Safari bloque l'ouverture du PDF après la requête réseau.
-  let pdfPreviewWindow = null;
-  if (isiOS) {
-    pdfPreviewWindow = window.open("about:blank", "_blank");
-    if (pdfPreviewWindow) {
-      pdfPreviewWindow.document.write(`
-        <!doctype html>
-        <html lang="fr">
-        <head>
-          <meta name="viewport" content="width=device-width,initial-scale=1">
-          <title>Génération du devis…</title>
-          <style>
-            body{margin:0;background:#07111f;color:#fff;font-family:system-ui,-apple-system,sans-serif;
-              min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
-            .box{max-width:420px}
-            .loader{width:40px;height:40px;border:4px solid #20364f;border-top-color:#39d1af;border-radius:50%;
-              margin:0 auto 18px;animation:s .8s linear infinite}
-            @keyframes s{to{transform:rotate(360deg)}}
-            p{color:#9aabc0;line-height:1.5}
-          </style>
-        </head>
-        <body><div class="box"><div class="loader"></div><h2>Génération du devis PDF…</h2>
-        <p>Le document va s’ouvrir ici automatiquement.</p></div></body>
-        </html>`);
-      pdfPreviewWindow.document.close();
-    }
-  }
-  const button = $("quoteGenerate");
   $("quoteError").textContent = "";
 
-  const amountHT = Number($("quoteAmount").value || 0);
-  if(amountHT<=0){
+  if(amountHT <= 0){
     $("quoteError").textContent = "Indique un montant supérieur à 0 €.";
     return;
   }
 
-  button.disabled = true;
-  const old = button.textContent;
-  button.textContent = "Génération…";
+  // Safari iPhone est beaucoup plus fiable quand le PDF est la réponse
+  // directe d'une navigation/formulaire, et non un blob généré via fetch.
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = "/api/admin-quote";
+  form.target = "_blank";
+  form.style.display = "none";
 
-  try{
-    const r = await fetch("/api/admin-quote",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "x-admin-password":state.password
-      },
-      body:JSON.stringify({
-        eventId,
-        amountHT,
-        vatRate:Number($("quoteVat").value || 0),
-        validityDays:Number($("quoteValidity").value || 30),
-        description:$("quoteDescription").value,
-        crmNotes:$("quoteNotes").value
-      })
-    });
+  const fields = {
+    adminPassword: state.password,
+    eventId,
+    amountHT: String(amountHT),
+    vatRate: String(Number($("quoteVat").value || 0)),
+    validityDays: String(Number($("quoteValidity").value || 30)),
+    description: $("quoteDescription").value,
+    crmNotes: $("quoteNotes").value
+  };
 
-    if(!r.ok){
-      const data = await r.json().catch(()=>({}));
-      throw new Error(data.error || "Impossible de générer le devis.");
-    }
+  Object.entries(fields).forEach(([name,value])=>{
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = name;
+    input.value = value == null ? "" : String(value);
+    form.appendChild(input);
+  });
 
-    const blob = await r.blob();
-    const disposition = r.headers.get("content-disposition") || "";
-    const match = disposition.match(/filename="([^"]+)"/i);
-    const filename = match ? match[1] : "Devis-Kabakaro.pdf";
+  document.body.appendChild(form);
 
-    const url = URL.createObjectURL(blob);
+  // Cette soumission est déclenchée directement par le clic utilisateur :
+  // Safari ouvre alors la réponse application/pdf dans son visualiseur natif.
+  form.submit();
+  form.remove();
 
-    if (isiOS) {
-      // L'onglet a déjà été ouvert au moment du clic.
-      // On le dirige maintenant vers le vrai PDF.
-      if (pdfPreviewWindow && !pdfPreviewWindow.closed) {
-        pdfPreviewWindow.location.replace(url);
-      } else {
-        // Fallback rare si Safari a malgré tout bloqué le nouvel onglet.
-        window.location.href = url;
-      }
-
-      // Garder l'URL assez longtemps pour le visualiseur PDF iOS.
-      setTimeout(()=>URL.revokeObjectURL(url), 5 * 60 * 1000);
-    } else {
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filename;
-      link.target = "_blank";
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      setTimeout(()=>URL.revokeObjectURL(url),10000);
-    }
-
-    const a = state.appointments.find(x=>x.id===eventId);
-    if(a){
-      a.crmStatus = "Devis envoyé";
-      a.crmEstimatedAmount = amountHT;
-      a.crmNotes = $("quoteNotes").value;
-    }
-
-    closeQuote();
-    render();
-    if($("pipeline").style.display!=="none") renderPipeline();
-  }catch(err){
-    if (typeof pdfPreviewWindow !== "undefined" && pdfPreviewWindow && !pdfPreviewWindow.closed) {
-      pdfPreviewWindow.close();
-    }
-    $("quoteError").textContent = err.message;
-  }finally{
-    button.disabled = false;
-    button.textContent = old;
+  const a = state.appointments.find(x=>x.id===eventId);
+  if(a){
+    a.crmStatus = "Devis envoyé";
+    a.crmEstimatedAmount = amountHT;
+    a.crmNotes = $("quoteNotes").value;
   }
+
+  closeQuote();
+  render();
+  if($("pipeline").style.display!=="none") renderPipeline();
+
+  // Recharger quelques secondes plus tard pour resynchroniser le statut réel
+  // enregistré côté Google Calendar.
+  setTimeout(()=>loadAppointments(), 2500);
 });
 
 loginForm.addEventListener("submit", e=>{
