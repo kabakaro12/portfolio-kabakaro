@@ -2,7 +2,7 @@ const { configured, pipeline } = require("../lib/redis");
 const TESTIMONIAL_KEY = "kabakaro:portfolio:testimonials";
 
 module.exports = async function handler(req, res) {
-  res.setHeader("Cache-Control", "public, max-age=60, s-maxage=300");
+  res.setHeader("Cache-Control", "no-store, max-age=0");
   if (req.method !== "GET") return res.status(405).json({ error:"Méthode non autorisée." });
   if (!configured()) return res.status(200).json({ testimonials:[] });
   try {
