@@ -1,11 +1,11 @@
 
 # Kabakaro Portfolio — Version finale 2026
 
-## Assistante IA (V16.8)
+## Assistante automatique gratuite (V16.9)
 
-Le bouton « Besoin d’aide ? » permet de présenter les services, guider les visiteurs et recueillir les informations utiles lorsqu’un problème survient. Des réponses de secours restent disponibles lorsque l’API ne répond pas.
+Le bouton « Besoin d’aide ? » reconnaît les demandes fréquentes sur les services, tarifs, devis, délais, technologies, projets, CV, contact, rendez-vous et problèmes techniques. Les réponses fonctionnent sans API, sans crédit et sans facturation.
 
-Dans Vercel, ajoutez `OPENAI_API_KEY` dans **Settings > Environment Variables**. La variable optionnelle `OPENAI_ASSISTANT_MODEL` permet de changer de modèle sans modifier le code. Redéployez ensuite le projet. Ne placez jamais la clé dans `index.html` ou `script.js`.
+La route IA reste présente pour une éventuelle réactivation future, mais l’interface actuelle ne l’appelle pas. Aucune variable OpenAI n’est nécessaire pour cette version.
 
 Cette version regroupe les fonctionnalités validées :
 

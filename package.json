@@ -1,8 +1,8 @@
 {
   "name": "kabakaro-portfolio-v15",
-  "version": "16.8.0",
+  "version": "16.9.0",
   "private": true,
-  "description": "Portfolio Kabakaro CRM avec visualiseur PDF iPhone et assistante IA",
+  "description": "Portfolio Kabakaro CRM avec assistante automatique gratuite",
   "engines": {
     "node": "22.x"
   },

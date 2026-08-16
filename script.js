@@ -153,7 +153,7 @@ bookingForm?.addEventListener("submit", async (e) => {
   }
 });
 
-// V16.8 — Assistante IA du portfolio
+// V16.9 — Assistante automatique gratuite du portfolio
 const assistantLauncher = document.getElementById("assistantLauncher");
 const assistantPanel = document.getElementById("assistantPanel");
 const assistantClose = document.getElementById("assistantClose");
@@ -180,12 +180,30 @@ function addAssistantMessage(text, role, extraClass = "") {
 }
 
 function assistantFallback(question) {
-  const value = question.toLowerCase();
-  if (value.includes("rendez") || value.includes("meet")) return "Vous pouvez choisir une date et un créneau dans la section Rendez-vous : #rendezvous";
-  if (value.includes("service") || value.includes("site web") || value.includes("prix") || value.includes("devis")) return "Kabakaro réalise des sites vitrines, des sites professionnels et des solutions web sur mesure. Consultez #services ou écrivez à kabakaro16@gmail.com pour un devis.";
-  if (value.includes("probl") || value.includes("erreur") || value.includes("bug") || value.includes("marche")) return "Je suis désolée pour ce problème. Essayez d’actualiser la page. Si le souci continue, indiquez l’appareil utilisé, la page concernée et ce qui s’affiche, puis contactez Kabakaro à kabakaro16@gmail.com.";
-  if (value.includes("projet") || value.includes("portfolio")) return "Vous pouvez découvrir les réalisations de Kabakaro dans la section Projets : #projets";
-  return "Je peux vous renseigner sur les services, les projets, la prise de rendez-vous ou vous aider à signaler un problème. Vous pouvez aussi contacter Kabakaro à kabakaro16@gmail.com.";
+  const value = question.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const has = (...words) => words.some(word => value.includes(word));
+  if (has("bonjour", "bonsoir", "salut", "hello", "coucou")) return "Bonjour 👋 Bienvenue sur le portfolio de Kabakaro Keita. Souhaitez-vous découvrir ses services, ses projets ou prendre rendez-vous ?";
+  if (has("merci", "parfait", "super")) return "Avec plaisir 😊 Je reste disponible si vous souhaitez consulter les projets, demander un devis ou prendre rendez-vous.";
+  if (has("qui es", "qui est kabakaro", "presente", "profil")) return "Kabakaro Keita est développeur Full Stack Web & Mobile. Il conçoit des sites modernes, des applications et des solutions numériques sur mesure. Découvrez son profil dans #profil.";
+  if (has("service", "propose", "prestation")) return "Kabakaro propose des sites vitrines, des sites professionnels, des applications web/mobile, la maintenance et des solutions sur mesure. Consultez #services.";
+  if (has("prix", "tarif", "combien", "cout", "devis")) return "Le tarif dépend des fonctionnalités et de la taille du projet. Décrivez votre besoin à kabakaro16@gmail.com ou prenez rendez-vous dans #rendezvous pour recevoir une proposition adaptée.";
+  if (has("delai", "duree", "combien de temps")) return "Le délai dépend du projet et des fonctionnalités demandées. Kabakaro pourra vous donner une estimation après un échange dans #rendezvous.";
+  if (has("rendez", "meet", "reservation", "creneau", "disponibilite")) return "Choisissez une date et un créneau dans #rendezvous. Une invitation Google Calendar et un lien Google Meet vous seront envoyés.";
+  if (has("contact", "email", "mail", "joindre", "appeler")) return "Contactez Kabakaro à kabakaro16@gmail.com ou au 07 45 93 61 72. Retrouvez aussi les liens utiles dans #contact.";
+  if (has("cv", "curriculum", "recrut", "embauch", "emploi", "opportunite")) return "Le CV de Kabakaro est téléchargeable depuis la page d’accueil. Pour une opportunité professionnelle, écrivez à kabakaro16@gmail.com.";
+  if (has("technologie", "competence", "langage", "framework", "stack")) return "Kabakaro travaille notamment avec React, React Native, JavaScript/TypeScript, Node.js, Python/Django, Symfony/PHP, PostgreSQL, MongoDB, Docker, Nginx et les API REST. Voir #competences.";
+  if (has("g-transport", "gtransport", "transport", "bus")) return "G-Transport est une solution web et mobile de gestion du transport urbain et interurbain en Guinée. Retrouvez sa présentation dans #projets.";
+  if (has("g-music", "gmusic", "flexmusic", "musique", "artiste")) return "G-Music est un projet de plateforme musicale destinée aux artistes et auditeurs guinéens. Découvrez-le dans #projets.";
+  if (has("proptech", "benne", "dechet")) return "Proptech Solutions est une solution de réservation et de gestion de location de bennes. Le projet est présenté dans #projets.";
+  if (has("projet", "realisation", "portfolio")) return "Découvrez les réalisations de Kabakaro, notamment G-Transport, G-Music et Proptech Solutions, dans #projets.";
+  if (has("site vitrine", "site professionnel", "ecommerce", "e-commerce", "boutique")) return "Oui, Kabakaro peut réaliser ce type de site. Présentez votre activité à kabakaro16@gmail.com ou réservez un échange dans #rendezvous.";
+  if (has("paiement", "payer", "facture")) return "Les modalités de paiement et de facturation sont définies dans la proposition correspondant au projet. Prenez rendez-vous dans #rendezvous pour en discuter.";
+  if (has("probl", "erreur", "bug", "marche", "bloque", "page blanche", "connexion")) return "Je suis désolée pour ce problème. Actualisez la page. Si le souci continue, indiquez : 1) votre appareil, 2) la page concernée, 3) l’action effectuée et 4) le message affiché, puis écrivez à kabakaro16@gmail.com.";
+  if (has("iphone", "android", "mobile")) return "Le portfolio est adapté aux mobiles. Si un problème persiste, indiquez le modèle du téléphone, le navigateur et l’action qui bloque à kabakaro16@gmail.com.";
+  if (has("admin", "mot de passe", "password", "secret")) return "L’espace d’administration est réservé au propriétaire. Ne partagez jamais de mot de passe ou de donnée confidentielle dans cette conversation.";
+  if (has("humain", "personne", "conseiller")) return "Pour échanger avec Kabakaro, écrivez à kabakaro16@gmail.com, appelez le 07 45 93 61 72 ou prenez rendez-vous dans #rendezvous.";
+  if (has("au revoir", "bye", "bonne journee", "bonne nuit")) return "Merci pour votre visite 👋 À bientôt sur le portfolio de Kabakaro !";
+  return "Je n’ai pas encore de réponse précise. Je peux vous renseigner sur les services, les tarifs, les projets, les technologies, le CV, le contact, la prise de rendez-vous ou un problème technique.";
 }
 
 function linkifyAssistantMessage(message) {
@@ -213,17 +231,12 @@ async function askAssistant(question) {
   const submit = assistantForm.querySelector('button[type="submit"]');
   submit.disabled = true;
   try {
-    const response = await fetch("/api/assistant", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: assistantHistory.slice(-8) }) });
-    const data = await response.json();
-    if (!response.ok || !data.answer) throw new Error(data.error || "Réponse indisponible");
+    await new Promise(resolve => setTimeout(resolve, 450));
     typing.remove();
-    const reply = addAssistantMessage(data.answer, "bot");
+    const answer = assistantFallback(question);
+    const reply = addAssistantMessage(answer, "bot");
     linkifyAssistantMessage(reply);
-    assistantHistory.push({ role: "assistant", content: data.answer });
-  } catch (error) {
-    typing.remove();
-    const reply = addAssistantMessage(assistantFallback(question), "bot");
-    linkifyAssistantMessage(reply);
+    assistantHistory.push({ role: "assistant", content: answer });
   } finally {
     submit.disabled = false;
     assistantInput.focus();
