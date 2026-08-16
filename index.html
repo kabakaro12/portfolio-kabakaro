@@ -375,7 +375,7 @@
 
         <article class="design-card reveal">
           <button class="design-image-button" type="button" data-design-image="assets/designs/g-transport.webp" data-design-title="G-Transport" aria-label="Agrandir le design G-Transport">
-            <img src="assets/designs/g-transport.webp" alt="Présentation du design web G-Transport" loading="lazy" width="900" height="1200">
+            <img src="assets/designs/g-transport.webp" alt="Présentation du design web G-Transport" loading="lazy" width="900" height="1350">
             <span>Voir en grand ↗</span>
           </button>
           <div class="design-info"><div><span>PLATEFORME WEB</span><h3>G-Transport</h3></div><p>Gestion de transport</p></div>
@@ -619,7 +619,7 @@
       </div>
       <div class="assistant-suggestions" id="assistantSuggestions" aria-label="Questions suggérées">
         <button type="button" data-question="Quels services propose Kabakaro ?">Voir les services</button>
-        <button type="button" data-question="Je rencontre un problème sur le site.">Signaler un problème</button>
+        <button type="button" data-action="report-issue">Signaler un problème</button>
         <button type="button" data-question="Comment prendre rendez-vous ?">Prendre rendez-vous</button>
       </div>
       <form class="assistant-form" id="assistantForm">
@@ -628,6 +628,29 @@
         <button type="submit" aria-label="Envoyer le message">➤</button>
       </form>
       <p class="assistant-disclaimer">Assistance automatique : ne partagez aucune donnée confidentielle.</p>
+
+      <div class="issue-report-panel" id="issueReportPanel" hidden>
+        <div class="issue-report-head">
+          <div><strong>Signaler un problème</strong><span>Votre demande sera transmise à Kabakaro.</span></div>
+          <button type="button" id="issueReportClose" aria-label="Fermer le formulaire">×</button>
+        </div>
+        <form class="issue-report-form" id="issueReportForm">
+          <div class="issue-form-row">
+            <label>Votre nom<input id="issueName" name="name" type="text" maxlength="80" autocomplete="name" required></label>
+            <label>Votre e-mail<input id="issueEmail" name="email" type="email" maxlength="120" autocomplete="email" required></label>
+          </div>
+          <label>Appareil utilisé
+            <select id="issueDevice" name="device" required>
+              <option value="">Choisir…</option><option>iPhone</option><option>Android</option><option>Ordinateur Windows</option><option>Mac</option><option>Tablette</option><option>Autre</option>
+            </select>
+          </label>
+          <label>Page concernée<input id="issuePage" name="page" type="text" maxlength="160" placeholder="Exemple : Projets, Rendez-vous…" required></label>
+          <label>Décrivez le problème<textarea id="issueDescription" name="description" rows="5" maxlength="1200" placeholder="Expliquez ce que vous faisiez et ce qui s’est affiché…" required></textarea></label>
+          <label class="issue-honeypot" aria-hidden="true">Ne pas remplir<input name="website" type="text" tabindex="-1" autocomplete="off"></label>
+          <button class="btn primary full-width" type="submit">Envoyer le signalement</button>
+          <p class="issue-report-status" id="issueReportStatus">Une personne prendra votre demande en charge dès que possible.</p>
+        </form>
+      </div>
     </div>
   </section>
 

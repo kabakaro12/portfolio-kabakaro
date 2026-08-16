@@ -1,6 +1,14 @@
 
 # Kabakaro Portfolio — Version finale 2026
 
+## Signalement de problème (V17.3)
+
+Le bouton « Signaler un problème » ouvre un formulaire dans l’assistante. Le visiteur renseigne son nom, son e-mail, son appareil, la page concernée et une description. Une référence `KK-...` est générée et la demande est envoyée à `NOTIFICATION_EMAIL` avec Resend. Le bouton fonctionne avec les variables `RESEND_API_KEY` et `NOTIFICATION_FROM` déjà utilisées par les notifications de rendez-vous.
+
+## Designs corrigés (V17.2)
+
+Les trois affiches utilisent désormais le numéro réel `07 45 93 61 72`. Les statistiques non vérifiées ont été remplacées par des fonctionnalités réelles et les données de l’interface G-Transport sont identifiées comme données de démonstration.
+
 ## Galerie de designs (V17.1.1)
 
 La section « Mes designs » présente les visuels réels de Proptech Solutions, G-Music et G-Transport. Les images sont optimisées en WebP, chargées progressivement et peuvent être ouvertes en grand. La galerie est accessible depuis le menu et reconnue par l’assistante automatique.

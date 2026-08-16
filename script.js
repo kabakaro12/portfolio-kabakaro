@@ -162,6 +162,9 @@ const assistantForm = document.getElementById("assistantForm");
 const assistantInput = document.getElementById("assistantInput");
 const assistantSuggestions = document.getElementById("assistantSuggestions");
 const assistantHistory = [];
+const issueReportPanel = document.getElementById("issueReportPanel");
+const issueReportForm = document.getElementById("issueReportForm");
+const issueReportStatus = document.getElementById("issueReportStatus");
 
 function toggleAssistant(open) {
   if (!assistantPanel) return;
@@ -169,6 +172,16 @@ function toggleAssistant(open) {
   assistantLauncher?.setAttribute("aria-expanded", String(open));
   if (open) setTimeout(() => assistantInput?.focus(), 50);
 }
+
+function showIssueReport() {
+  if (!issueReportPanel) return;
+  issueReportPanel.hidden = false;
+  const pageField = document.getElementById("issuePage");
+  if (pageField && !pageField.value) pageField.value = location.hash ? `Section ${location.hash}` : "Page d’accueil";
+  setTimeout(() => document.getElementById("issueName")?.focus(), 50);
+}
+
+function hideIssueReport() { if (issueReportPanel) issueReportPanel.hidden = true; }
 
 function addAssistantMessage(text, role, extraClass = "") {
   const message = document.createElement("div");
@@ -239,6 +252,8 @@ async function askAssistant(question) {
     const reply = addAssistantMessage(answer, "bot");
     linkifyAssistantMessage(reply);
     assistantHistory.push({ role: "assistant", content: answer });
+    const normalizedQuestion = question.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    if (["probleme", "erreur", "bug", "bloque", "page blanche"].some(word => normalizedQuestion.includes(word))) setTimeout(showIssueReport, 650);
   } finally {
     submit.disabled = false;
     assistantInput.focus();
@@ -248,8 +263,39 @@ async function askAssistant(question) {
 assistantLauncher?.addEventListener("click", () => toggleAssistant(assistantPanel.hidden));
 assistantClose?.addEventListener("click", () => toggleAssistant(false));
 assistantForm?.addEventListener("submit", (event) => { event.preventDefault(); const question = assistantInput.value.trim(); if (!question) return; assistantInput.value = ""; askAssistant(question); });
-assistantSuggestions?.addEventListener("click", (event) => { const button = event.target.closest("button[data-question]"); if (button) askAssistant(button.dataset.question); });
+assistantSuggestions?.addEventListener("click", (event) => {
+  const reportButton = event.target.closest('button[data-action="report-issue"]');
+  if (reportButton) return showIssueReport();
+  const button = event.target.closest("button[data-question]");
+  if (button) askAssistant(button.dataset.question);
+});
 document.addEventListener("keydown", (event) => { if (event.key === "Escape" && assistantPanel && !assistantPanel.hidden) toggleAssistant(false); });
+document.getElementById("issueReportClose")?.addEventListener("click", hideIssueReport);
+
+issueReportForm?.addEventListener("submit", async event => {
+  event.preventDefault();
+  const submit = issueReportForm.querySelector('button[type="submit"]');
+  submit.disabled = true;
+  submit.textContent = "Envoi en cours…";
+  issueReportStatus.textContent = "Transmission sécurisée de votre demande…";
+  issueReportStatus.className = "issue-report-status";
+  const payload = Object.fromEntries(new FormData(issueReportForm).entries());
+  payload.url = location.href;
+  try {
+    const response = await fetch("/api/report-issue", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Impossible d’envoyer le signalement.");
+    issueReportForm.reset();
+    issueReportStatus.textContent = `Signalement ${data.ticketId} envoyé. Kabakaro prendra votre demande en charge dès que possible.`;
+    issueReportStatus.classList.add("success");
+  } catch (error) {
+    issueReportStatus.textContent = error.message || "Une erreur est survenue. Écrivez à kabakaro16@gmail.com.";
+    issueReportStatus.classList.add("error");
+  } finally {
+    submit.disabled = false;
+    submit.textContent = "Envoyer le signalement";
+  }
+});
 
 // Galerie des designs — ouverture en grand
 const designLightbox = document.getElementById("designLightbox");
