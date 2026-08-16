@@ -1,6 +1,10 @@
 
 # Kabakaro Portfolio — Version finale 2026
 
+## Méthode professionnelle et FAQ (V17.6)
+
+Ajout d’un parcours client en quatre étapes, d’engagements professionnels vérifiables et d’une FAQ sur les délais, le nom de domaine, le responsive, les modifications et le démarrage d’un projet.
+
 ## Correctif du défilement mobile (V17.5.1)
 
 Sur iPhone, l’arrière-plan est désormais verrouillé pendant l’ouverture de l’assistante puis la position exacte est restaurée à sa fermeture. La hauteur utilise l’unité dynamique `dvh` et la fin de page est stabilisée au niveau du footer.
