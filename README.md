@@ -1,6 +1,10 @@
 
 # Kabakaro Portfolio — Version finale 2026
 
+## Correctif du défilement mobile (V17.5.1)
+
+Sur iPhone, l’arrière-plan est désormais verrouillé pendant l’ouverture de l’assistante puis la position exacte est restaurée à sa fermeture. La hauteur utilise l’unité dynamique `dvh` et la fin de page est stabilisée au niveau du footer.
+
 ## Footer professionnel (V17.5)
 
 Le pied de page comprend désormais l’identité Kabakaro Dev, la disponibilité du site, les coordonnées, la navigation, GitHub, LinkedIn, le CV, les pages légales et l’accès discret à l’administration. Le bouton secondaire du formulaire de signalement est devenu une action « Retour » pour éviter deux icônes de fermeture identiques.

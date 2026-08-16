@@ -166,9 +166,19 @@ const issueReportPanel = document.getElementById("issueReportPanel");
 const issueReportForm = document.getElementById("issueReportForm");
 const issueReportStatus = document.getElementById("issueReportStatus");
 const issueSuccessCard = document.getElementById("issueSuccessCard");
+let assistantScrollPosition = 0;
 
 function toggleAssistant(open) {
   if (!assistantPanel) return;
+  if (open && !document.body.classList.contains("assistant-open")) {
+    assistantScrollPosition = window.scrollY;
+    document.body.style.top = `-${assistantScrollPosition}px`;
+    document.body.classList.add("assistant-open");
+  } else if (!open && document.body.classList.contains("assistant-open")) {
+    document.body.classList.remove("assistant-open");
+    document.body.style.top = "";
+    window.scrollTo(0, assistantScrollPosition);
+  }
   assistantPanel.hidden = !open;
   assistantLauncher?.setAttribute("aria-expanded", String(open));
   if (open) setTimeout(() => assistantInput?.focus(), 50);
