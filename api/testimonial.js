@@ -1,5 +1,5 @@
 const recentRequests = new Map();
-const { configured, pipeline } = require("./_redis");
+const { configured, pipeline } = require("../lib/redis");
 const TESTIMONIAL_KEY = "kabakaro:portfolio:testimonials";
 
 function sendJson(res, status, data) {

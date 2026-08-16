@@ -1,4 +1,4 @@
-const { getAccessToken, calendarId, timezone, CALENDAR_API } = require("./_google");
+const { getAccessToken, calendarId, timezone, CALENDAR_API } = require("../lib/google");
 
 async function checkBusy(accessToken, start, end) {
   const response = await fetch(`${CALENDAR_API}/freeBusy`, {

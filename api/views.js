@@ -1,4 +1,4 @@
-const { configured, pipeline } = require("./_redis");
+const { configured, pipeline } = require("../lib/redis");
 const VIEW_KEY = "kabakaro:portfolio:views";
 
 function sendJson(res, status, data) {

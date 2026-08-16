@@ -1,5 +1,5 @@
 const PDFDocument = require("pdfkit");
-const { getAccessToken, calendarId, CALENDAR_API } = require("./_google");
+const { getAccessToken, calendarId, CALENDAR_API } = require("../lib/google");
 
 function authorized(req) {
   const expected = process.env.ADMIN_PASSWORD;

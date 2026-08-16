@@ -1,4 +1,4 @@
-const { getAccessToken, calendarId, timezone, CALENDAR_API, safeGoogleError } = require("./_google");
+const { getAccessToken, calendarId, timezone, CALENDAR_API, safeGoogleError } = require("../lib/google");
 
 const SLOT_MINUTES = 30;
 const WORK_START = 9;    // 09:00

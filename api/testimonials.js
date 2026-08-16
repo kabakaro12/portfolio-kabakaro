@@ -1,4 +1,4 @@
-const { configured, pipeline } = require("./_redis");
+const { configured, pipeline } = require("../lib/redis");
 const TESTIMONIAL_KEY = "kabakaro:portfolio:testimonials";
 
 module.exports = async function handler(req, res) {

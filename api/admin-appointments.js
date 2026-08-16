@@ -1,4 +1,4 @@
-const { getAccessToken, calendarId, timezone, CALENDAR_API } = require("./_google");
+const { getAccessToken, calendarId, timezone, CALENDAR_API } = require("../lib/google");
 
 function authorized(req) {
   const expected = process.env.ADMIN_PASSWORD;
