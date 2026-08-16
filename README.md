@@ -1,6 +1,10 @@
 
 # Kabakaro Portfolio — Version finale 2026
 
+## Galerie de designs (V17.1)
+
+La section « Mes designs » présente les visuels réels de Proptech Solutions, G-Music et G-Transport. Les images sont optimisées en WebP, chargées progressivement et peuvent être ouvertes en grand. La galerie est accessible depuis le menu et reconnue par l’assistante automatique.
+
 ## Assistante automatique gratuite (V16.9.1)
 
 Le bouton « Besoin d’aide ? » reconnaît les demandes fréquentes sur les services, tarifs, devis, délais, technologies, projets, CV, contact, rendez-vous et problèmes techniques. Les réponses fonctionnent sans API, sans crédit et sans facturation.

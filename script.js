@@ -197,6 +197,7 @@ function assistantFallback(question) {
   if (has("g-music", "gmusic", "flexmusic", "musique", "artiste")) return "G-Music est un projet de plateforme musicale destinée aux artistes et auditeurs guinéens. Découvrez-le dans #projets.";
   if (has("proptech", "benne", "dechet")) return "Proptech Solutions est une solution de réservation et de gestion de location de bennes. Le projet est présenté dans #projets.";
   if (has("projet", "realisation", "portfolio")) return "Découvrez les réalisations de Kabakaro, notamment G-Transport, G-Music et Proptech Solutions, dans #projets.";
+  if (has("design", "maquette", "ui", "ux", "interface")) return "Découvrez une sélection de maquettes web, mobiles, e-commerce et tableaux de bord réalisées par Kabakaro dans #designs.";
   if (has("site vitrine", "site professionnel", "ecommerce", "e-commerce", "boutique")) return "Oui, Kabakaro peut réaliser ce type de site. Présentez votre activité à kabakaro16@gmail.com ou réservez un échange dans #rendezvous.";
   if (has("paiement", "payer", "facture")) return "Les modalités de paiement et de facturation sont définies dans la proposition correspondant au projet. Prenez rendez-vous dans #rendezvous pour en discuter.";
   if (has("probl", "erreur", "bug", "marche", "bloque", "page blanche", "connexion")) return "Je suis désolée pour ce problème. Actualisez la page. Si le souci continue, indiquez : 1) votre appareil, 2) la page concernée, 3) l’action effectuée et 4) le message affiché, puis écrivez à kabakaro16@gmail.com.";
@@ -249,3 +250,16 @@ assistantClose?.addEventListener("click", () => toggleAssistant(false));
 assistantForm?.addEventListener("submit", (event) => { event.preventDefault(); const question = assistantInput.value.trim(); if (!question) return; assistantInput.value = ""; askAssistant(question); });
 assistantSuggestions?.addEventListener("click", (event) => { const button = event.target.closest("button[data-question]"); if (button) askAssistant(button.dataset.question); });
 document.addEventListener("keydown", (event) => { if (event.key === "Escape" && assistantPanel && !assistantPanel.hidden) toggleAssistant(false); });
+
+// Galerie des designs — ouverture en grand
+const designLightbox = document.getElementById("designLightbox");
+const designLightboxImage = document.getElementById("designLightboxImage");
+const designLightboxTitle = document.getElementById("designLightboxTitle");
+document.querySelectorAll(".design-image-button").forEach(button => button.addEventListener("click", () => {
+  designLightboxImage.src = button.dataset.designImage;
+  designLightboxImage.alt = `Design ${button.dataset.designTitle} réalisé par Kabakaro Dev`;
+  designLightboxTitle.textContent = button.dataset.designTitle;
+  designLightbox.showModal();
+}));
+document.getElementById("designLightboxClose")?.addEventListener("click", () => designLightbox.close());
+designLightbox?.addEventListener("click", event => { if (event.target === designLightbox) designLightbox.close(); });
