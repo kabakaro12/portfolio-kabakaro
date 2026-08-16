@@ -558,6 +558,34 @@
 
 </footer>
 
+  <section class="ai-assistant" aria-label="Assistante virtuelle Kabakaro">
+    <button class="assistant-launcher" id="assistantLauncher" type="button" aria-expanded="false" aria-controls="assistantPanel">
+      <span class="assistant-launcher-icon" aria-hidden="true">✦</span>
+      <span class="assistant-launcher-label">Besoin d’aide ?</span>
+    </button>
+    <div class="assistant-panel" id="assistantPanel" role="dialog" aria-modal="false" aria-labelledby="assistantTitle" hidden>
+      <header class="assistant-header">
+        <div class="assistant-avatar" aria-hidden="true">K</div>
+        <div><strong id="assistantTitle">Assistante Kabakaro</strong><span><i></i> En ligne</span></div>
+        <button class="assistant-close" id="assistantClose" type="button" aria-label="Fermer l’assistante">×</button>
+      </header>
+      <div class="assistant-messages" id="assistantMessages" role="log" aria-live="polite" aria-relevant="additions">
+        <div class="assistant-message bot">Bonjour 👋 Je suis l’assistante virtuelle de Kabakaro. Je peux vous présenter ses services, ses projets ou vous aider en cas de problème sur le site.</div>
+      </div>
+      <div class="assistant-suggestions" id="assistantSuggestions" aria-label="Questions suggérées">
+        <button type="button" data-question="Quels services propose Kabakaro ?">Voir les services</button>
+        <button type="button" data-question="Je rencontre un problème sur le site.">Signaler un problème</button>
+        <button type="button" data-question="Comment prendre rendez-vous ?">Prendre rendez-vous</button>
+      </div>
+      <form class="assistant-form" id="assistantForm">
+        <label class="sr-only" for="assistantInput">Votre message</label>
+        <input id="assistantInput" type="text" maxlength="500" autocomplete="off" placeholder="Écrivez votre question…" required>
+        <button type="submit" aria-label="Envoyer le message">➤</button>
+      </form>
+      <p class="assistant-disclaimer">Assistante IA : ne partagez aucune donnée confidentielle.</p>
+    </div>
+  </section>
+
   <script src="script.js"></script>
 </body>
 </html>

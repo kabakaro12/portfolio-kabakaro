@@ -152,3 +152,86 @@ bookingForm?.addEventListener("submit", async (e) => {
     submitBtn.textContent = "Confirmer mon rendez-vous";
   }
 });
+
+// V16.8 — Assistante IA du portfolio
+const assistantLauncher = document.getElementById("assistantLauncher");
+const assistantPanel = document.getElementById("assistantPanel");
+const assistantClose = document.getElementById("assistantClose");
+const assistantMessages = document.getElementById("assistantMessages");
+const assistantForm = document.getElementById("assistantForm");
+const assistantInput = document.getElementById("assistantInput");
+const assistantSuggestions = document.getElementById("assistantSuggestions");
+const assistantHistory = [];
+
+function toggleAssistant(open) {
+  if (!assistantPanel) return;
+  assistantPanel.hidden = !open;
+  assistantLauncher?.setAttribute("aria-expanded", String(open));
+  if (open) setTimeout(() => assistantInput?.focus(), 50);
+}
+
+function addAssistantMessage(text, role, extraClass = "") {
+  const message = document.createElement("div");
+  message.className = `assistant-message ${role} ${extraClass}`.trim();
+  message.textContent = text;
+  assistantMessages.appendChild(message);
+  assistantMessages.scrollTop = assistantMessages.scrollHeight;
+  return message;
+}
+
+function assistantFallback(question) {
+  const value = question.toLowerCase();
+  if (value.includes("rendez") || value.includes("meet")) return "Vous pouvez choisir une date et un créneau dans la section Rendez-vous : #rendezvous";
+  if (value.includes("service") || value.includes("site web") || value.includes("prix") || value.includes("devis")) return "Kabakaro réalise des sites vitrines, des sites professionnels et des solutions web sur mesure. Consultez #services ou écrivez à kabakaro16@gmail.com pour un devis.";
+  if (value.includes("probl") || value.includes("erreur") || value.includes("bug") || value.includes("marche")) return "Je suis désolée pour ce problème. Essayez d’actualiser la page. Si le souci continue, indiquez l’appareil utilisé, la page concernée et ce qui s’affiche, puis contactez Kabakaro à kabakaro16@gmail.com.";
+  if (value.includes("projet") || value.includes("portfolio")) return "Vous pouvez découvrir les réalisations de Kabakaro dans la section Projets : #projets";
+  return "Je peux vous renseigner sur les services, les projets, la prise de rendez-vous ou vous aider à signaler un problème. Vous pouvez aussi contacter Kabakaro à kabakaro16@gmail.com.";
+}
+
+function linkifyAssistantMessage(message) {
+  const text = message.textContent;
+  const fragment = document.createDocumentFragment();
+  const pattern = /(#[a-z]+|[\w.+-]+@[\w.-]+\.[a-z]{2,})/gi;
+  let lastIndex = 0;
+  for (const match of text.matchAll(pattern)) {
+    fragment.append(document.createTextNode(text.slice(lastIndex, match.index)));
+    const link = document.createElement("a");
+    link.textContent = match[0];
+    link.href = match[0].startsWith("#") ? match[0] : `mailto:${match[0]}`;
+    link.addEventListener("click", () => toggleAssistant(false));
+    fragment.append(link);
+    lastIndex = match.index + match[0].length;
+  }
+  fragment.append(document.createTextNode(text.slice(lastIndex)));
+  message.replaceChildren(fragment);
+}
+
+async function askAssistant(question) {
+  addAssistantMessage(question, "user");
+  assistantHistory.push({ role: "user", content: question });
+  const typing = addAssistantMessage("L’assistante vous répond…", "bot", "typing");
+  const submit = assistantForm.querySelector('button[type="submit"]');
+  submit.disabled = true;
+  try {
+    const response = await fetch("/api/assistant", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: assistantHistory.slice(-8) }) });
+    const data = await response.json();
+    if (!response.ok || !data.answer) throw new Error(data.error || "Réponse indisponible");
+    typing.remove();
+    const reply = addAssistantMessage(data.answer, "bot");
+    linkifyAssistantMessage(reply);
+    assistantHistory.push({ role: "assistant", content: data.answer });
+  } catch (error) {
+    typing.remove();
+    const reply = addAssistantMessage(assistantFallback(question), "bot");
+    linkifyAssistantMessage(reply);
+  } finally {
+    submit.disabled = false;
+    assistantInput.focus();
+  }
+}
+
+assistantLauncher?.addEventListener("click", () => toggleAssistant(assistantPanel.hidden));
+assistantClose?.addEventListener("click", () => toggleAssistant(false));
+assistantForm?.addEventListener("submit", (event) => { event.preventDefault(); const question = assistantInput.value.trim(); if (!question) return; assistantInput.value = ""; askAssistant(question); });
+assistantSuggestions?.addEventListener("click", (event) => { const button = event.target.closest("button[data-question]"); if (button) askAssistant(button.dataset.question); });
+document.addEventListener("keydown", (event) => { if (event.key === "Escape" && assistantPanel && !assistantPanel.hidden) toggleAssistant(false); });

@@ -1,6 +1,12 @@
 
 # Kabakaro Portfolio — Version finale 2026
 
+## Assistante IA (V16.8)
+
+Le bouton « Besoin d’aide ? » permet de présenter les services, guider les visiteurs et recueillir les informations utiles lorsqu’un problème survient. Des réponses de secours restent disponibles lorsque l’API ne répond pas.
+
+Dans Vercel, ajoutez `OPENAI_API_KEY` dans **Settings > Environment Variables**. La variable optionnelle `OPENAI_ASSISTANT_MODEL` permet de changer de modèle sans modifier le code. Redéployez ensuite le projet. Ne placez jamais la clé dans `index.html` ou `script.js`.
+
 Cette version regroupe les fonctionnalités validées :
 
 - Portfolio responsive web/mobile
@@ -181,5 +187,33 @@ La génération de devis fonctionne maintenant ainsi :
 - sur iPhone/iPad : le PDF s'ouvre directement dans Safari ;
 - utiliser ensuite **Partager → Enregistrer dans Fichiers** ;
 - sur ordinateur : téléchargement classique du PDF.
+
+Aucune nouvelle variable Vercel n'est nécessaire.
+
+
+## Correctif devis iPhone — v16.7.3
+
+Sur iPhone/iPad, après génération du devis PDF, l'application utilise maintenant
+la feuille de partage native iOS.
+
+Elle permet directement :
+- Enregistrer dans Fichiers
+- Imprimer
+- AirDrop
+- Envoyer par Mail / Messages
+- Partager vers d'autres applications
+
+Sur ordinateur, le téléchargement PDF classique reste inchangé.
+
+
+## Correctif PDF iPhone — v16.7.4
+
+Correction du blocage Safari lié aux actions asynchrones après un clic utilisateur.
+
+Nouveau fonctionnement sur iPhone/iPad :
+1. au clic sur Générer, un nouvel onglet Safari s'ouvre immédiatement ;
+2. la génération du PDF continue en arrière-plan ;
+3. le PDF remplace automatiquement la page de chargement ;
+4. le visualiseur PDF iOS permet ensuite Partager, Imprimer et Enregistrer dans Fichiers.
 
 Aucune nouvelle variable Vercel n'est nécessaire.
