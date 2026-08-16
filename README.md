@@ -1,6 +1,10 @@
 
 # Kabakaro Portfolio — Version finale 2026
 
+## Demandes de devis guidées (V17.9)
+
+Ajout d’un estimateur public, de l’enregistrement des demandes dans Upstash et de leur suivi dans l’administration (nouveau, contacté, proposition envoyée, gagné ou perdu). Les témoignages publiés sont désormais chargés sans délai de cache. Le projet reste limité à exactement 12 fonctions serveur pour Vercel Hobby.
+
 ## Compatibilité Vercel Hobby (V17.8.2)
 
 Les modules Google et Redis ont été déplacés hors du dossier `api` et l’ancienne route OpenAI inutilisée a été supprimée. Le projet contient désormais exactement 12 fonctions serveur, conformément à la limite du forfait gratuit Vercel Hobby.

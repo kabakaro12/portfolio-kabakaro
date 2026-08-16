@@ -436,7 +436,7 @@
             <li>Mise en ligne</li>
             <li>SEO de base</li>
           </ul>
-          <a class="btn secondary service-btn" href="mailto:kabakaro16@gmail.com?subject=Demande%20de%20devis%20-%20Site%20vitrine">Demander un devis</a>
+          <a class="btn secondary service-btn" href="#devis">Estimer mon projet</a>
         </article>
 
         <article class="service-card featured-service reveal">
@@ -450,7 +450,7 @@
             <li>Intégration réseaux sociaux</li>
             <li>Déploiement et configuration du domaine</li>
           </ul>
-          <a class="btn primary service-btn" target="_blank" rel="noopener" href="https://wa.me/33745936172?text=Bonjour%20Kabakaro%2C%20je%20souhaite%20un%20devis%20pour%20un%20site%20professionnel.">Parler de mon projet</a>
+          <a class="btn primary service-btn" href="#devis">Demander un devis</a>
         </article>
 
         <article class="service-card reveal">
@@ -464,7 +464,7 @@
             <li>E-commerce ou fonctionnalités métier</li>
             <li>Maintenance et évolutions possibles</li>
           </ul>
-          <a class="btn secondary service-btn" href="mailto:kabakaro16@gmail.com?subject=Projet%20web%20personnalise">Discuter du projet</a>
+          <a class="btn secondary service-btn" href="#devis">Décrire mon projet</a>
         </article>
       </div>
 
@@ -481,6 +481,25 @@
       </div>
     </section>
 
+
+    <section id="devis" class="section quote-section">
+      <div class="section-heading reveal"><p class="eyebrow">ESTIMATION GRATUITE</p><h2>Recevez une première estimation de votre projet.</h2><p class="services-intro">Répondez à quelques questions. Le montant affiché est indicatif et sera confirmé après l’étude de votre besoin.</p></div>
+      <div class="quote-public-layout">
+        <form class="quote-public-form reveal" id="publicQuoteForm">
+          <div class="form-row"><label>Votre nom<input name="name" maxlength="80" autocomplete="name" required></label><label>Votre e-mail<input name="email" type="email" maxlength="120" autocomplete="email" required></label></div>
+          <div class="form-row"><label>Téléphone<input name="phone" type="tel" maxlength="40" autocomplete="tel" placeholder="Facultatif"></label><label>Type de projet<select name="projectType" id="quoteProjectType" required><option value="">Choisir</option><option value="vitrine">Site vitrine</option><option value="professionnel">Site professionnel</option><option value="ecommerce">Boutique e-commerce</option><option value="sur_mesure">Application sur mesure</option></select></label></div>
+          <div class="form-row"><label>Nombre de pages<input name="pages" id="quotePages" type="number" min="1" max="30" value="3" required></label><label>Délai souhaité<select name="deadline"><option value="">À définir</option><option>Moins d’un mois</option><option>1 à 2 mois</option><option>2 à 3 mois</option><option>Plus de 3 mois</option></select></label></div>
+          <fieldset class="quote-features"><legend>Fonctionnalités souhaitées</legend>
+            <label><input type="checkbox" name="features" value="contact"> Formulaire de contact</label><label><input type="checkbox" name="features" value="whatsapp"> WhatsApp</label><label><input type="checkbox" name="features" value="seo"> Référencement SEO</label><label><input type="checkbox" name="features" value="blog"> Blog</label><label><input type="checkbox" name="features" value="booking"> Réservation</label><label><input type="checkbox" name="features" value="payment"> Paiement en ligne</label><label><input type="checkbox" name="features" value="account"> Comptes clients</label><label><input type="checkbox" name="features" value="dashboard"> Tableau de bord</label><label><input type="checkbox" name="features" value="multilingual"> Plusieurs langues</label><label><input type="checkbox" name="features" value="maintenance"> Maintenance</label>
+          </fieldset>
+          <label>Décrivez votre besoin<textarea name="details" rows="5" minlength="10" maxlength="1200" required placeholder="Votre activité, votre objectif et les fonctions importantes…"></textarea></label>
+          <label class="issue-honeypot" aria-hidden="true">Ne pas remplir<input name="website" tabindex="-1" autocomplete="off"></label>
+          <label class="testimonial-consent"><input name="consent" type="checkbox" value="yes" required><span>J’accepte que mes informations soient utilisées pour étudier cette demande. Consultez la <a href="/confidentialite.html" target="_blank">politique de confidentialité</a>.</span></label>
+          <button class="btn primary full-width" type="submit">Envoyer ma demande de devis</button><p class="testimonial-status" id="publicQuoteStatus" aria-live="polite"></p>
+        </form>
+        <aside class="quote-estimate-card reveal" aria-live="polite"><span>ESTIMATION INDICATIVE</span><strong id="quoteEstimate">Sélectionnez un projet</strong><p>Cette fourchette ne constitue pas un devis contractuel. Kabakaro vérifiera le périmètre avant de vous transmettre une proposition définitive.</p><ul><li>✓ Réponse personnalisée</li><li>✓ Demande suivie dans l’administration</li><li>✓ Aucun paiement demandé ici</li></ul></aside>
+      </div>
+    </section>
 
     <section id="methode" class="section professional-section">
       <div class="section-heading reveal">
@@ -675,7 +694,7 @@
           <p>Développement web et mobile, interfaces modernes et solutions numériques adaptées à votre activité.</p>
           <div class="footer-availability"><i></i><span>Site accessible 24 h/24 • Demandes prises en charge</span></div>
         </div>
-        <nav class="footer-column" aria-label="Navigation du pied de page"><h3>Navigation</h3><a href="#profil">Profil</a><a href="#projets">Projets</a><a href="#designs">Designs</a><a href="#services">Services</a><a href="#methode">Méthode & FAQ</a><a href="#temoignages">Témoignages</a><a href="#rendezvous">Rendez-vous</a></nav>
+        <nav class="footer-column" aria-label="Navigation du pied de page"><h3>Navigation</h3><a href="#profil">Profil</a><a href="#projets">Projets</a><a href="#designs">Designs</a><a href="#services">Services</a><a href="#devis">Demander un devis</a><a href="#methode">Méthode & FAQ</a><a href="#temoignages">Témoignages</a><a href="#rendezvous">Rendez-vous</a></nav>
         <div class="footer-column"><h3>Contact</h3><a href="mailto:kabakaro16@gmail.com">kabakaro16@gmail.com</a><a href="tel:+33745936172">07 45 93 61 72</a><span>Amiens, France</span></div>
         <div class="footer-column"><h3>Retrouvez-moi</h3><a target="_blank" rel="noopener" href="https://github.com/kabakaro12">GitHub ↗</a><a target="_blank" rel="noopener" href="https://www.linkedin.com/in/keitakabaro/">LinkedIn ↗</a><a href="CV_Kabakaro_Keita_Developpeur_Full_Stack.pdf" download>Télécharger mon CV ↓</a></div>
       </div>

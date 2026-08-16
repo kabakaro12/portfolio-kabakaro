@@ -393,3 +393,28 @@ async function loadPublishedTestimonials() {
   } catch (_) {}
 }
 loadPublishedTestimonials();
+
+// V17.9 — Estimation et demande de devis enregistrée dans le CRM
+const publicQuoteForm = document.getElementById("publicQuoteForm");
+const quoteEstimate = document.getElementById("quoteEstimate");
+const quoteStatus = document.getElementById("publicQuoteStatus");
+function calculatePublicQuote() {
+  if (!publicQuoteForm || !quoteEstimate) return null;
+  const data = new FormData(publicQuoteForm), type = data.get("projectType");
+  if (!type) { quoteEstimate.textContent = "Sélectionnez un projet"; return null; }
+  const bases={vitrine:300,professionnel:600,ecommerce:950,sur_mesure:1200};
+  const extras={contact:50,whatsapp:30,seo:100,blog:180,booking:250,payment:350,account:400,dashboard:450,multilingual:180,maintenance:120};
+  const pages=Math.max(1,Math.min(30,Number(data.get("pages"))||1));
+  const minimum=Math.round((bases[type]+Math.max(0,pages-3)*55+data.getAll("features").reduce((sum,value)=>sum+(extras[value]||0),0))/10)*10;
+  const maximum=Math.round((minimum*1.35)/10)*10;
+  quoteEstimate.textContent=`${minimum.toLocaleString("fr-FR")} € – ${maximum.toLocaleString("fr-FR")} €`;
+  return {minimum,maximum};
+}
+publicQuoteForm?.addEventListener("input",calculatePublicQuote);
+publicQuoteForm?.addEventListener("change",calculatePublicQuote);
+publicQuoteForm?.addEventListener("submit",async event=>{
+  event.preventDefault(); const button=publicQuoteForm.querySelector('button[type="submit"]'); const formData=new FormData(publicQuoteForm); const payload=Object.fromEntries(formData.entries()); payload.kind="quote"; payload.features=formData.getAll("features");
+  quoteStatus.className="testimonial-status"; quoteStatus.textContent="Envoi en cours…"; button.disabled=true;
+  try { const response=await fetch("/api/report-issue",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}); const data=await response.json(); if(!response.ok) throw new Error(data.error||"Impossible d’envoyer la demande."); quoteStatus.textContent=`Demande ${data.quoteId} enregistrée. Estimation : ${Number(data.estimatedMin).toLocaleString("fr-FR")} € à ${Number(data.estimatedMax).toLocaleString("fr-FR")} €. Kabakaro vous recontactera.`; quoteStatus.classList.add("success"); publicQuoteForm.reset(); calculatePublicQuote(); }
+  catch(error){quoteStatus.textContent=error.message;quoteStatus.classList.add("error");} finally{button.disabled=false;}
+});
