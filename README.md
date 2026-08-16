@@ -1,6 +1,10 @@
 
 # Kabakaro Portfolio — Version finale 2026
 
+## Compatibilité Vercel Hobby (V17.8.2)
+
+Les modules Google et Redis ont été déplacés hors du dossier `api` et l’ancienne route OpenAI inutilisée a été supprimée. Le projet contient désormais exactement 12 fonctions serveur, conformément à la limite du forfait gratuit Vercel Hobby.
+
 ## Correctif administration Safari (V17.8.1)
 
 La route du tableau de bord utilise désormais un en-tête d’autorisation standard encodé et une URL absolue, afin d’éviter l’erreur Safari « The string did not match the expected pattern » sur iPhone.
