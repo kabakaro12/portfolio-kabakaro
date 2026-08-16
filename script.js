@@ -165,6 +165,7 @@ const assistantHistory = [];
 const issueReportPanel = document.getElementById("issueReportPanel");
 const issueReportForm = document.getElementById("issueReportForm");
 const issueReportStatus = document.getElementById("issueReportStatus");
+const issueSuccessCard = document.getElementById("issueSuccessCard");
 
 function toggleAssistant(open) {
   if (!assistantPanel) return;
@@ -176,6 +177,8 @@ function toggleAssistant(open) {
 function showIssueReport() {
   if (!issueReportPanel) return;
   issueReportPanel.hidden = false;
+  issueReportForm.hidden = false;
+  issueSuccessCard.hidden = true;
   const pageField = document.getElementById("issuePage");
   if (pageField && !pageField.value) pageField.value = location.hash ? `Section ${location.hash}` : "Page d’accueil";
   setTimeout(() => document.getElementById("issueName")?.focus(), 50);
@@ -286,8 +289,9 @@ issueReportForm?.addEventListener("submit", async event => {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Impossible d’envoyer le signalement.");
     issueReportForm.reset();
-    issueReportStatus.textContent = `Signalement ${data.ticketId} envoyé. Kabakaro prendra votre demande en charge dès que possible.`;
-    issueReportStatus.classList.add("success");
+    issueReportForm.hidden = true;
+    document.getElementById("issueTicketId").textContent = data.ticketId;
+    issueSuccessCard.hidden = false;
   } catch (error) {
     issueReportStatus.textContent = error.message || "Une erreur est survenue. Écrivez à kabakaro16@gmail.com.";
     issueReportStatus.classList.add("error");
@@ -296,6 +300,8 @@ issueReportForm?.addEventListener("submit", async event => {
     submit.textContent = "Envoyer le signalement";
   }
 });
+document.getElementById("issueSuccessClose")?.addEventListener("click", () => { hideIssueReport(); toggleAssistant(false); });
+document.getElementById("issueReportAnother")?.addEventListener("click", () => { issueSuccessCard.hidden = true; issueReportForm.hidden = false; issueReportStatus.textContent = "Une personne prendra votre demande en charge dès que possible."; issueReportStatus.className = "issue-report-status"; document.getElementById("issueName")?.focus(); });
 
 // Galerie des designs — ouverture en grand
 const designLightbox = document.getElementById("designLightbox");

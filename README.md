@@ -1,6 +1,10 @@
 
 # Kabakaro Portfolio — Version finale 2026
 
+## Confiance et confirmation (V17.4)
+
+Après l’envoi d’un signalement, le formulaire est remplacé par une carte de confirmation avec référence de suivi, fermeture et nouveau signalement. Une case de consentement est obligatoire. Les pages `confidentialite.html` et `mentions-legales.html` sont accessibles dans le pied de page.
+
 ## Signalement de problème (V17.3)
 
 Le bouton « Signaler un problème » ouvre un formulaire dans l’assistante. Le visiteur renseigne son nom, son e-mail, son appareil, la page concernée et une description. Une référence `KK-...` est générée et la demande est envoyée à `NOTIFICATION_EMAIL` avec Resend. Le bouton fonctionne avec les variables `RESEND_API_KEY` et `NOTIFICATION_FROM` déjà utilisées par les notifications de rendez-vous.

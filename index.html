@@ -601,6 +601,11 @@
   🔐 Administration
 </a>
 
+<div class="footer-legal-links">
+  <a href="/mentions-legales.html">Mentions légales</a>
+  <a href="/confidentialite.html">Confidentialité</a>
+</div>
+
 </footer>
 
   <section class="ai-assistant" aria-label="Assistante virtuelle Kabakaro">
@@ -647,9 +652,18 @@
           <label>Page concernée<input id="issuePage" name="page" type="text" maxlength="160" placeholder="Exemple : Projets, Rendez-vous…" required></label>
           <label>Décrivez le problème<textarea id="issueDescription" name="description" rows="5" maxlength="1200" placeholder="Expliquez ce que vous faisiez et ce qui s’est affiché…" required></textarea></label>
           <label class="issue-honeypot" aria-hidden="true">Ne pas remplir<input name="website" type="text" tabindex="-1" autocomplete="off"></label>
+          <label class="issue-consent"><input name="consent" type="checkbox" value="yes" required><span>J’accepte que mes informations soient utilisées pour traiter ce signalement. <a href="/confidentialite.html" target="_blank">En savoir plus</a>.</span></label>
           <button class="btn primary full-width" type="submit">Envoyer le signalement</button>
           <p class="issue-report-status" id="issueReportStatus">Une personne prendra votre demande en charge dès que possible.</p>
         </form>
+        <div class="issue-success-card" id="issueSuccessCard" hidden>
+          <span class="issue-success-icon" aria-hidden="true">✓</span>
+          <p class="issue-success-kicker">DEMANDE BIEN REÇUE</p>
+          <h3>Votre signalement a été envoyé.</h3>
+          <p>Kabakaro prendra votre demande en charge dès que possible.</p>
+          <div class="issue-ticket"><span>Référence de suivi</span><strong id="issueTicketId">KK-…</strong></div>
+          <div class="issue-success-actions"><button class="btn primary" id="issueSuccessClose" type="button">Fermer</button><button class="btn secondary" id="issueReportAnother" type="button">Nouveau signalement</button></div>
+        </div>
       </div>
     </div>
   </section>
