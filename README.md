@@ -1,6 +1,10 @@
 
 # Kabakaro Portfolio — Version finale 2026
 
+## Footer professionnel (V17.5)
+
+Le pied de page comprend désormais l’identité Kabakaro Dev, la disponibilité du site, les coordonnées, la navigation, GitHub, LinkedIn, le CV, les pages légales et l’accès discret à l’administration. Le bouton secondaire du formulaire de signalement est devenu une action « Retour » pour éviter deux icônes de fermeture identiques.
+
 ## Confiance et confirmation (V17.4)
 
 Après l’envoi d’un signalement, le formulaire est remplacé par une carte de confirmation avec référence de suivi, fermeture et nouveau signalement. Une case de consentement est obligatoire. Les pages `confidentialite.html` et `mentions-legales.html` sont accessibles dans le pied de page.
