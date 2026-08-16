@@ -24,8 +24,9 @@ module.exports = async function handler(request, response) {
   const description = clean(request.body?.description, 1200);
   const url = clean(request.body?.url, 300);
   const website = clean(request.body?.website, 100);
+  const consent = clean(request.body?.consent, 10);
   if (website) return sendJson(response, 200, { ticketId: "KK-RECU" });
-  if (!name || !email || !device || !page || description.length < 10) return sendJson(response, 400, { error: "Merci de remplir correctement tous les champs." });
+  if (!name || !email || !device || !page || description.length < 10 || consent !== "yes") return sendJson(response, 400, { error: "Merci de remplir tous les champs et d’accepter l’utilisation de vos informations." });
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return sendJson(response, 400, { error: "L’adresse e-mail n’est pas valide." });
 
   const ticketId = `KK-${Date.now().toString(36).toUpperCase()}`;
