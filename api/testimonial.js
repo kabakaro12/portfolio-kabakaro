@@ -1,4 +1,6 @@
 const recentRequests = new Map();
+const { configured, pipeline } = require("./_redis");
+const TESTIMONIAL_KEY = "kabakaro:portfolio:testimonials";
 
 function sendJson(res, status, data) {
   res.setHeader("Cache-Control", "no-store");
@@ -33,8 +35,14 @@ module.exports = async function handler(req, res) {
     const response = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify({ from, to: [ownerEmail], reply_to: email, subject: `[Portfolio] Témoignage de ${name} — ${rating}/5`, html }) });
     const result = await response.json();
     if (!response.ok) { console.error("Testimonial email error", response.status, result?.message || "unknown"); return sendJson(res, 502, { error: "Le témoignage n’a pas pu être envoyé." }); }
+    const testimonial = { id: `AVIS-${now.toString(36).toUpperCase()}`, name, email, company, rating:Number(rating), message, status:"pending", createdAt:new Date(now).toISOString() };
+    let stored = false;
+    if (configured()) {
+      try { await pipeline([["LPUSH", TESTIMONIAL_KEY, JSON.stringify(testimonial)], ["LTRIM", TESTIMONIAL_KEY, 0, 199]]); stored = true; }
+      catch (storageError) { console.error("Testimonial storage error", storageError?.message || storageError); }
+    }
     recentRequests.set(ip, now);
-    return sendJson(res, 200, { received: true });
+    return sendJson(res, 200, { received: true, stored, reference: testimonial.id });
   } catch (error) {
     console.error("Testimonial failure", error?.message || error);
     return sendJson(res, 500, { error: "Le témoignage n’a pas pu être envoyé." });

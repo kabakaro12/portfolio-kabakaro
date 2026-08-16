@@ -1,3 +1,4 @@
+const { configured, pipeline } = require("./_redis");
 const VIEW_KEY = "kabakaro:portfolio:views";
 
 function sendJson(res, status, data) {
@@ -5,24 +6,17 @@ function sendJson(res, status, data) {
   return res.status(status).json(data);
 }
 
-async function redisCommand(command, key) {
-  const baseUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
-  if (!baseUrl || !token) return { configured: false, result: 0 };
-  const response = await fetch(`${baseUrl.replace(/\/$/, "")}/${command}/${encodeURIComponent(key)}`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  const data = await response.json();
-  if (!response.ok || data.error) throw new Error(data.error || "Redis indisponible");
-  return { configured: true, result: Number(data.result || 0) };
-}
-
 module.exports = async function handler(req, res) {
   if (!["GET", "POST"].includes(req.method)) return sendJson(res, 405, { error: "Méthode non autorisée." });
   try {
-    const result = await redisCommand(req.method === "POST" ? "incr" : "get", VIEW_KEY);
-    return sendJson(res, 200, { views: result.result, configured: result.configured });
+    if (!configured()) return sendJson(res, 200, { views: 0, today: 0, configured: false });
+    const day = new Date().toISOString().slice(0, 10);
+    const dayKey = `${VIEW_KEY}:day:${day}`;
+    const commands = req.method === "POST"
+      ? [["INCR", VIEW_KEY], ["INCR", dayKey], ["EXPIRE", dayKey, 7776000]]
+      : [["GET", VIEW_KEY], ["GET", dayKey]];
+    const values = await pipeline(commands);
+    return sendJson(res, 200, { views: Number(values[0] || 0), today: Number(values[1] || 0), configured: true });
   } catch (error) {
     console.error("Page views error", error?.message || error);
     return sendJson(res, 503, { error: "Compteur temporairement indisponible.", configured: true });
