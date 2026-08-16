@@ -183,6 +183,7 @@ function assistantFallback(question) {
   const value = question.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   const has = (...words) => words.some(word => value.includes(word));
   if (has("bonjour", "bonsoir", "salut", "hello", "coucou")) return "Bonjour 👋 Bienvenue sur le portfolio de Kabakaro Keita. Souhaitez-vous découvrir ses services, ses projets ou prendre rendez-vous ?";
+  if (has("horaire", "site ouvert", "24h", "24 h", "prise en charge")) return "Le site est accessible 24 h/24 et 7 j/7. Vous pouvez envoyer votre demande à tout moment ; une personne la prendra en charge dès que possible.";
   if (has("merci", "parfait", "super")) return "Avec plaisir 😊 Je reste disponible si vous souhaitez consulter les projets, demander un devis ou prendre rendez-vous.";
   if (has("qui es", "qui est kabakaro", "presente", "profil")) return "Kabakaro Keita est développeur Full Stack Web & Mobile. Il conçoit des sites modernes, des applications et des solutions numériques sur mesure. Découvrez son profil dans #profil.";
   if (has("service", "propose", "prestation")) return "Kabakaro propose des sites vitrines, des sites professionnels, des applications web/mobile, la maintenance et des solutions sur mesure. Consultez #services.";

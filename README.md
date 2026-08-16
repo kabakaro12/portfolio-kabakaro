@@ -1,9 +1,11 @@
 
 # Kabakaro Portfolio — Version finale 2026
 
-## Assistante automatique gratuite (V16.9)
+## Assistante automatique gratuite (V16.9.1)
 
 Le bouton « Besoin d’aide ? » reconnaît les demandes fréquentes sur les services, tarifs, devis, délais, technologies, projets, CV, contact, rendez-vous et problèmes techniques. Les réponses fonctionnent sans API, sans crédit et sans facturation.
+
+Le portfolio signale également qu’il est accessible 24 h/24 et 7 j/7 et que les demandes sont prises en charge dès que possible.
 
 La route IA reste présente pour une éventuelle réactivation future, mais l’interface actuelle ne l’appelle pas. Aucune variable OpenAI n’est nécessaire pour cette version.
 
