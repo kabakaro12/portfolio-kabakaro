@@ -1,6 +1,10 @@
 
 # Kabakaro Portfolio — Version finale 2026
 
+## Tableau de bord administrateur (V17.8)
+
+Ajout des statistiques de visites totales, quotidiennes et hebdomadaires, de l’enregistrement des témoignages dans Upstash, de leur modération (publier, masquer, supprimer) et de leur affichage automatique sur le portfolio après validation. La session administrateur se ferme après 30 minutes d’inactivité.
+
 ## Témoignages vérifiés et compteur de vues (V17.7)
 
 Ajout d’un formulaire de témoignage avec consentement et validation avant publication. Le compteur global utilise Redis côté serveur et incrémente une seule fois par session. Variables compatibles : `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` ou `KV_REST_API_URL` / `KV_REST_API_TOKEN`.

@@ -370,3 +370,26 @@ testimonialForm?.addEventListener("submit", async event => {
     submit.disabled = false;
   }
 });
+
+async function loadPublishedTestimonials() {
+  const container = document.getElementById("publishedTestimonials");
+  const empty = document.getElementById("testimonialEmpty");
+  if (!container || !empty) return;
+  try {
+    const response = await fetch("/api/testimonials", { cache:"no-store" });
+    const data = await response.json();
+    if (!response.ok || !data.testimonials?.length) return;
+    container.replaceChildren(...data.testimonials.map(item => {
+      const article = document.createElement("article");
+      article.className = "published-testimonial";
+      const stars = document.createElement("div"); stars.className="stars"; stars.textContent="★".repeat(Math.max(3,Math.min(5,Number(item.rating)||5)));
+      const quote = document.createElement("blockquote"); quote.textContent=item.message;
+      const footer = document.createElement("footer");
+      const identity = document.createElement("div"); const name=document.createElement("strong"); name.textContent=item.name; const company=document.createElement("span"); company.textContent=item.company||"Client"; identity.append(name,company);
+      const verified=document.createElement("span"); verified.className="verified-review"; verified.textContent="✓ AVIS VÉRIFIÉ";
+      footer.append(identity,verified); article.append(stars,quote,footer); return article;
+    }));
+    empty.hidden = true; container.hidden = false;
+  } catch (_) {}
+}
+loadPublishedTestimonials();
