@@ -2,6 +2,15 @@
   const $ = id => document.getElementById(id);
   const label = status => ({pending:"En attente",published:"Publié",hidden:"Masqué"}[status] || status);
   const escapeText = value => String(value || "");
+  const adminHeaders = (json=false) => ({
+    ...(json ? {"Content-Type":"application/json"} : {}),
+    "Authorization":`Bearer ${encodeURIComponent(String(window.adminState?.password || ""))}`
+  });
+  const showMessage = text => {
+    const root=$("adminTestimonials");
+    const box=document.createElement("div"); box.className="dashboard-message"; box.textContent=text;
+    root.replaceChildren(box);
+  };
 
   function renderTestimonials(items) {
     const root = $("adminTestimonials");
@@ -21,9 +30,10 @@
 
   async function load() {
     if (!window.adminState?.password) return;
-    const root=$("adminTestimonials"); root.innerHTML='<div class="dashboard-message">Chargement du tableau de bord…</div>';
+    const root=$("adminTestimonials"); showMessage("Chargement du tableau de bord…");
     try {
-      const response=await fetch("/api/admin-dashboard",{headers:{"x-admin-password":window.adminState.password}});
+      const endpoint=new URL("/api/admin-dashboard",window.location.origin).toString();
+      const response=await fetch(endpoint,{headers:adminHeaders(),cache:"no-store"});
       const data=await response.json();
       if(response.status===401) throw new Error("AUTH");
       if(!response.ok) throw new Error(data.error||"Erreur serveur");
@@ -33,7 +43,7 @@
       $("dashPending").textContent=data.pending;
       renderTestimonials(data.testimonials);
     } catch(error) {
-      root.innerHTML=`<div class="dashboard-message">${error.message==="AUTH"?"Session expirée.":escapeText(error.message)}</div>`;
+      showMessage(error.message==="AUTH"?"Session expirée.":escapeText(error.message));
     }
   }
 
@@ -41,7 +51,8 @@
     if(status==="deleted" && !confirm("Supprimer définitivement ce témoignage ?")) return;
     button.disabled=true;
     try {
-      const response=await fetch("/api/admin-dashboard",{method:"PATCH",headers:{"Content-Type":"application/json","x-admin-password":window.adminState.password},body:JSON.stringify({id,status})});
+      const endpoint=new URL("/api/admin-dashboard",window.location.origin).toString();
+      const response=await fetch(endpoint,{method:"PATCH",headers:adminHeaders(true),body:JSON.stringify({id,status})});
       const data=await response.json(); if(!response.ok) throw new Error(data.error||"Action impossible"); await load();
     } catch(error) { alert(error.message); button.disabled=false; }
   }

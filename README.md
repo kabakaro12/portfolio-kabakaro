@@ -1,6 +1,10 @@
 
 # Kabakaro Portfolio — Version finale 2026
 
+## Correctif administration Safari (V17.8.1)
+
+La route du tableau de bord utilise désormais un en-tête d’autorisation standard encodé et une URL absolue, afin d’éviter l’erreur Safari « The string did not match the expected pattern » sur iPhone.
+
 ## Tableau de bord administrateur (V17.8)
 
 Ajout des statistiques de visites totales, quotidiennes et hebdomadaires, de l’enregistrement des témoignages dans Upstash, de leur modération (publier, masquer, supprimer) et de leur affichage automatique sur le portfolio après validation. La session administrateur se ferme après 30 minutes d’inactivité.
