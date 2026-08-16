@@ -4,7 +4,10 @@ const TESTIMONIAL_KEY = "kabakaro:portfolio:testimonials";
 
 function authorized(req) {
   const expected = process.env.ADMIN_PASSWORD;
-  const provided = req.headers["x-admin-password"];
+  const bearer = String(req.headers.authorization || "").match(/^Bearer\s+(.+)$/i)?.[1];
+  let decodedBearer = "";
+  try { decodedBearer = bearer ? decodeURIComponent(bearer) : ""; } catch { decodedBearer = ""; }
+  const provided = decodedBearer || req.headers["x-admin-password"];
   if (!expected) throw new Error("Configuration manquante : ADMIN_PASSWORD");
   return typeof provided === "string" && provided === expected;
 }
