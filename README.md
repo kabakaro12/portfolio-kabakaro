@@ -1,6 +1,10 @@
 
 # Kabakaro Portfolio — Version finale 2026
 
+## Correctif devis mobile (V17.9.1)
+
+Le consentement du formulaire de devis est compact et correctement aligné sur téléphone. Après l’envoi, la fourchette estimative reste visible avec une confirmation claire.
+
 ## Demandes de devis guidées (V17.9)
 
 Ajout d’un estimateur public, de l’enregistrement des demandes dans Upstash et de leur suivi dans l’administration (nouveau, contacté, proposition envoyée, gagné ou perdu). Les témoignages publiés sont désormais chargés sans délai de cache. Le projet reste limité à exactement 12 fonctions serveur pour Vercel Hobby.

@@ -403,8 +403,11 @@ footer{color:var(--muted);font-size:12px}
 .quote-public-layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.75fr);gap:28px;align-items:start}
 .quote-public-form,.quote-estimate-card{background:var(--surface,#0d1d31);border:1px solid var(--line,#243a55);border-radius:24px;padding:28px}
 .quote-public-form label{display:grid;gap:8px;font-weight:700;color:var(--text,#eef4ff)}
+.quote-public-form .testimonial-consent{display:flex;align-items:flex-start;gap:12px;margin:18px 0;color:var(--muted);font-size:14px;font-weight:500;line-height:1.55}
+.quote-public-form .testimonial-consent input{flex:0 0 22px;width:22px;height:22px;margin-top:2px;padding:0;accent-color:var(--accent)}
+.quote-public-form .testimonial-consent span{display:block;min-width:0}.quote-public-form .testimonial-consent a{color:var(--accent);font-weight:700}
 .quote-public-form input,.quote-public-form select,.quote-public-form textarea{width:100%;background:#071425;border:1px solid var(--line,#243a55);color:var(--text,#eef4ff);border-radius:13px;padding:14px;font:inherit}
 .quote-features{border:1px solid var(--line,#243a55);border-radius:16px;padding:18px;margin:20px 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .quote-features legend{padding:0 8px;font-weight:800}.quote-features label{display:flex;grid-template-columns:none;align-items:center;gap:9px;color:var(--muted,#9cacbf);font-weight:600}.quote-features input{width:20px;height:20px;accent-color:var(--accent,#35d0b2)}
 .quote-estimate-card{position:sticky;top:100px}.quote-estimate-card>span{color:var(--accent,#35d0b2);font-size:13px;font-weight:900;letter-spacing:.14em}.quote-estimate-card>strong{display:block;font-size:clamp(26px,4vw,42px);margin:18px 0;color:var(--text,#eef4ff)}.quote-estimate-card p,.quote-estimate-card li{color:var(--muted,#9cacbf);line-height:1.65}.quote-estimate-card ul{list-style:none;padding:0;display:grid;gap:10px}
-@media(max-width:800px){.quote-public-layout{grid-template-columns:1fr}.quote-estimate-card{position:static}.quote-features{grid-template-columns:1fr}.quote-public-form,.quote-estimate-card{padding:20px}}
+@media(max-width:800px){.quote-public-layout{grid-template-columns:1fr}.quote-estimate-card{position:static}.quote-features{grid-template-columns:1fr}.quote-public-form,.quote-estimate-card{padding:20px}.quote-public-form .testimonial-consent{font-size:13px;line-height:1.45}.quote-public-form .testimonial-consent input{flex-basis:20px;width:20px;height:20px}}
