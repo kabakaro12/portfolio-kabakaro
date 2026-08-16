@@ -1,6 +1,10 @@
 
 # Kabakaro Portfolio — Version finale 2026
 
+## Témoignages vérifiés et compteur de vues (V17.7)
+
+Ajout d’un formulaire de témoignage avec consentement et validation avant publication. Le compteur global utilise Redis côté serveur et incrémente une seule fois par session. Variables compatibles : `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` ou `KV_REST_API_URL` / `KV_REST_API_TOKEN`.
+
 ## Méthode professionnelle et FAQ (V17.6)
 
 Ajout d’un parcours client en quatre étapes, d’engagements professionnels vérifiables et d’une FAQ sur les délais, le nom de domaine, le responsive, les modifications et le démarrage d’un projet.

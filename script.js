@@ -325,3 +325,48 @@ document.querySelectorAll(".design-image-button").forEach(button => button.addEv
 }));
 document.getElementById("designLightboxClose")?.addEventListener("click", () => designLightbox.close());
 designLightbox?.addEventListener("click", event => { if (event.target === designLightbox) designLightbox.close(); });
+
+// V17.7 — Compteur global de visites (une incrémentation par session)
+async function updatePageViews() {
+  const counter = document.getElementById("pageViewCounter");
+  const count = document.getElementById("pageViewCount");
+  if (!counter || !count) return;
+  try {
+    const alreadyCounted = sessionStorage.getItem("kk-page-view-counted") === "yes";
+    const response = await fetch("/api/views", { method: alreadyCounted ? "GET" : "POST", cache: "no-store" });
+    const data = await response.json();
+    if (!response.ok || !data.configured || !Number.isFinite(Number(data.views))) return;
+    if (!alreadyCounted) sessionStorage.setItem("kk-page-view-counted", "yes");
+    count.textContent = new Intl.NumberFormat("fr-FR").format(Number(data.views));
+    counter.hidden = false;
+  } catch (_) {
+    // Le compteur reste discret si le service de stockage est indisponible.
+  }
+}
+updatePageViews();
+
+// Collecte d'un témoignage pour vérification avant publication
+const testimonialForm = document.getElementById("testimonialForm");
+const testimonialStatus = document.getElementById("testimonialStatus");
+testimonialForm?.addEventListener("submit", async event => {
+  event.preventDefault();
+  const submit = testimonialForm.querySelector('button[type="submit"]');
+  const formData = new FormData(testimonialForm);
+  const payload = Object.fromEntries(formData.entries());
+  testimonialStatus.className = "testimonial-status";
+  testimonialStatus.textContent = "Envoi en cours…";
+  submit.disabled = true;
+  try {
+    const response = await fetch("/api/testimonial", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Impossible d’envoyer le témoignage.");
+    testimonialForm.reset();
+    testimonialStatus.textContent = "Merci ! Votre témoignage a été reçu et sera vérifié avant publication.";
+    testimonialStatus.classList.add("success");
+  } catch (error) {
+    testimonialStatus.textContent = error.message || "Une erreur est survenue. Vous pouvez écrire à kabakaro16@gmail.com.";
+    testimonialStatus.classList.add("error");
+  } finally {
+    submit.disabled = false;
+  }
+});

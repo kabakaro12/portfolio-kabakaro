@@ -53,6 +53,7 @@
       <a href="#formation">Formation</a>
       <a href="#services">Services</a>
       <a href="#methode">Méthode</a>
+      <a href="#temoignages">Avis</a>
       <a href="#passions">Passions</a>
       <a href="#rendezvous">Rendez-vous</a>
       <a class="nav-cta" href="#contact">Contact</a>
@@ -515,6 +516,41 @@
     </section>
 
 
+    <section id="temoignages" class="section alt testimonials-section">
+      <div class="section-heading reveal">
+        <p class="eyebrow">TÉMOIGNAGES CLIENTS</p>
+        <h2>Des avis authentiques et vérifiés.</h2>
+        <p class="services-intro">Les témoignages sont publiés uniquement après vérification et accord de leur auteur. Aucun avis fictif n’est affiché.</p>
+      </div>
+
+      <div class="testimonials-layout">
+        <div class="testimonial-empty reveal">
+          <span class="testimonial-mark" aria-hidden="true">“</span>
+          <h3>Les premiers témoignages arrivent prochainement.</h3>
+          <p>Vous avez travaillé avec Kabakaro ? Partagez votre expérience. Votre avis sera examiné avant toute publication.</p>
+          <div class="testimonial-rules"><span>✓ Avis vérifié</span><span>✓ Publication avec accord</span><span>✓ Aucune donnée confidentielle</span></div>
+        </div>
+
+        <form class="testimonial-form reveal" id="testimonialForm">
+          <div class="testimonial-form-head"><span>VOTRE EXPÉRIENCE</span><h3>Déposer un témoignage</h3></div>
+          <div class="form-row">
+            <label>Nom<input name="name" type="text" maxlength="80" autocomplete="name" required></label>
+            <label>E-mail<input name="email" type="email" maxlength="120" autocomplete="email" required></label>
+          </div>
+          <div class="form-row">
+            <label>Entreprise ou activité<input name="company" type="text" maxlength="100" placeholder="Facultatif"></label>
+            <label>Note<select name="rating" required><option value="">Choisir</option><option value="5">5/5 — Excellent</option><option value="4">4/5 — Très bien</option><option value="3">3/5 — Bien</option></select></label>
+          </div>
+          <label>Votre témoignage<textarea name="message" rows="5" minlength="20" maxlength="800" placeholder="Expliquez ce que Kabakaro a réalisé et ce que vous avez apprécié…" required></textarea></label>
+          <label class="issue-honeypot" aria-hidden="true">Ne pas remplir<input name="website" type="text" tabindex="-1" autocomplete="off"></label>
+          <label class="testimonial-consent"><input name="consent" type="checkbox" value="yes" required><span>J’autorise Kabakaro à examiner cet avis et à me contacter pour confirmer son éventuelle publication. Consultez la <a href="/confidentialite.html" target="_blank">politique de confidentialité</a>.</span></label>
+          <button class="btn primary full-width" type="submit">Envoyer mon témoignage</button>
+          <p class="testimonial-status" id="testimonialStatus" aria-live="polite">L’envoi d’un avis ne garantit pas sa publication.</p>
+        </form>
+      </div>
+    </section>
+
+
     <section id="rendezvous" class="section appointment-section">
       <div class="section-heading reveal">
         <p class="eyebrow">RENDEZ-VOUS</p>
@@ -637,12 +673,12 @@
           <p>Développement web et mobile, interfaces modernes et solutions numériques adaptées à votre activité.</p>
           <div class="footer-availability"><i></i><span>Site accessible 24 h/24 • Demandes prises en charge</span></div>
         </div>
-        <nav class="footer-column" aria-label="Navigation du pied de page"><h3>Navigation</h3><a href="#profil">Profil</a><a href="#projets">Projets</a><a href="#designs">Designs</a><a href="#services">Services</a><a href="#methode">Méthode & FAQ</a><a href="#rendezvous">Rendez-vous</a></nav>
+        <nav class="footer-column" aria-label="Navigation du pied de page"><h3>Navigation</h3><a href="#profil">Profil</a><a href="#projets">Projets</a><a href="#designs">Designs</a><a href="#services">Services</a><a href="#methode">Méthode & FAQ</a><a href="#temoignages">Témoignages</a><a href="#rendezvous">Rendez-vous</a></nav>
         <div class="footer-column"><h3>Contact</h3><a href="mailto:kabakaro16@gmail.com">kabakaro16@gmail.com</a><a href="tel:+33745936172">07 45 93 61 72</a><span>Amiens, France</span></div>
         <div class="footer-column"><h3>Retrouvez-moi</h3><a target="_blank" rel="noopener" href="https://github.com/kabakaro12">GitHub ↗</a><a target="_blank" rel="noopener" href="https://www.linkedin.com/in/keitakabaro/">LinkedIn ↗</a><a href="CV_Kabakaro_Keita_Developpeur_Full_Stack.pdf" download>Télécharger mon CV ↓</a></div>
       </div>
       <div class="footer-bottom">
-        <p>© <span id="year"></span> Kabakaro Keita. Tous droits réservés.</p>
+        <p>© <span id="year"></span> Kabakaro Keita. Tous droits réservés. <span class="page-views" id="pageViewCounter" hidden>• <strong id="pageViewCount">0</strong> visites</span></p>
         <div class="footer-legal-links"><a href="/mentions-legales.html">Mentions légales</a><a href="/confidentialite.html">Confidentialité</a><a href="/admin.html" class="admin-access-link" aria-label="Accéder à l'administration">🔐 Administration</a></div>
       </div>
     </div>
