@@ -412,3 +412,17 @@ footer{color:var(--muted);font-size:12px}
 .quote-estimate-card{position:sticky;top:100px}.quote-estimate-card>span{color:var(--accent,#35d0b2);font-size:13px;font-weight:900;letter-spacing:.14em}.quote-estimate-card>strong{display:block;font-size:clamp(26px,4vw,42px);margin:18px 0;color:var(--text,#eef4ff)}.quote-estimate-card p,.quote-estimate-card li{color:var(--muted,#9cacbf);line-height:1.65}.quote-estimate-card ul{list-style:none;padding:0;display:grid;gap:10px}
 .quote-estimate-card>strong.confirmed{display:grid;gap:5px}.quote-sent-label{font-size:18px;color:var(--accent);letter-spacing:.02em}.quote-sent-amount{font-size:clamp(24px,4.8vw,36px);line-height:1.2;white-space:nowrap}
 @media(max-width:800px){.quote-public-layout{grid-template-columns:1fr}.quote-estimate-card{position:static}.quote-features{grid-template-columns:1fr}.quote-public-form,.quote-estimate-card{padding:20px}.quote-public-form .testimonial-consent{font-size:13px;line-height:1.45}.quote-public-form .testimonial-consent input{flex-basis:20px;width:20px;height:20px}.quote-sent-label{font-size:15px}.quote-sent-amount{font-size:clamp(22px,7vw,30px)}}
+
+/* V18.1 — Champ pays + finitions mobile rendez-vous */
+.booking-project-row > label { grid-column: 1 / -1; }
+.booking-card input:-webkit-autofill,
+.booking-card input:-webkit-autofill:hover,
+.booking-card input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f4f7fb;
+  -webkit-box-shadow: 0 0 0 1000px #071522 inset;
+  transition: background-color 9999s ease-out 0s;
+}
+@media (max-width: 700px) {
+  .booking-note { padding-right: 58px; line-height: 1.55; }
+  #assistantLauncher { width: 56px; height: 56px; right: 14px; bottom: 18px; }
+}

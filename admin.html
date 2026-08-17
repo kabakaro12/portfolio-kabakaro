@@ -541,11 +541,12 @@ function render(){
         <div><span>Client</span><br><b>${esc(a.name || "—")}</b></div>
         <div><span>E-mail</span><br><b>${esc(a.email || "—")}</b></div>
         <div><span>Téléphone</span><br><b>${esc(a.phone || "—")}</b></div>
+        <div><span>Pays</span><br><b>${esc(a.country || "—")}</b></div>
         <div><span>Début</span><br><b>${esc(formatDate(a.start))}</b></div>
         <div><span>Fin</span><br><b>${esc(formatDate(a.end))}</b></div>
       </div>
       <div class="project"><b>Qualification du projet</b><br>
-        <span class="sub">Type :</span> ${esc(a.projectType || "Non renseigné")} • <span class="sub">Budget :</span> ${esc(a.budget || "Non renseigné")} • <span class="sub">Délai :</span> ${esc(a.deadline || "Non renseigné")}<br><br>
+        <span class="sub">Pays :</span> ${esc(a.country || "Non renseigné")} • <span class="sub">Type :</span> ${esc(a.projectType || "Non renseigné")} • <span class="sub">Budget :</span> ${esc(a.budget || "Non renseigné")} • <span class="sub">Délai :</span> ${esc(a.deadline || "Non renseigné")}<br><br>
         <b>Description</b><br>${esc(a.project || "Non renseignée")}
       </div>
       ${a.qualificationStatus === "pending" ? `<div class="followup-alert overdue">⚠ Demande à qualifier avant confirmation</div>` : ""}

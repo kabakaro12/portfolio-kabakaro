@@ -285,3 +285,19 @@ Aucune nouvelle variable Vercel n'est nécessaire.
 - L'admin voit le statut « En attente d’informations » et peut demander des précisions, confirmer ou annuler.
 - À la confirmation admin, Google Meet est créé et l'invitation Google Calendar est envoyée au client.
 - Le devis PDF reste masqué tant que le rendez-vous n'est pas qualifié/confirmé.
+
+## V18 — Qualification des rendez-vous
+- Formulaire enrichi : téléphone/WhatsApp, type de projet, budget, délai et description obligatoire.
+- Le client envoie désormais une demande de rendez-vous au lieu d'une confirmation immédiate.
+- Le créneau est bloqué provisoirement dans Google Calendar sans inviter le client.
+- Statut admin : « En attente d’informations » tant que la demande n’est pas validée.
+- L’administrateur peut demander des précisions, confirmer ou annuler la demande.
+- Google Meet + invitation Google Calendar ne sont créés qu’au moment de la confirmation admin.
+- Le client reçoit un e-mail d’accusé de réception via Resend si RESEND_API_KEY est configurée.
+- La création de devis PDF est masquée tant que le rendez-vous n’est pas qualifié.
+
+
+## V18.1
+- Ajout du pays obligatoire dans la demande de rendez-vous.
+- Le pays est transmis dans la notification, Google Calendar et l’administration.
+- Correction visuelle de l’autoremplissage e-mail sur mobile et espacement de l’assistante.

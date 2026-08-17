@@ -18,7 +18,7 @@ document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
 
 document.getElementById("year").textContent = new Date().getFullYear();
 
-// V15 — Rendez-vous Google Calendar + lien Google Meet automatique
+// V18 — Demande de rendez-vous qualifiée avant confirmation
 const bookingDate = document.getElementById("bookingDate");
 const slotsContainer = document.getElementById("slots");
 const selectedSlotInput = document.getElementById("selectedSlot");
@@ -95,6 +95,7 @@ bookingForm?.addEventListener("submit", async (e) => {
   const name = document.getElementById("bookingName").value.trim();
   const email = document.getElementById("bookingEmail").value.trim();
   const phone = document.getElementById("bookingPhone").value.trim();
+  const country = document.getElementById("bookingCountry").value;
   const projectType = document.getElementById("bookingProjectType").value;
   const budget = document.getElementById("bookingBudget").value;
   const deadline = document.getElementById("bookingDeadline").value;
@@ -129,6 +130,7 @@ bookingForm?.addEventListener("submit", async (e) => {
         name,
         email,
         phone,
+        country,
         projectType,
         budget,
         deadline,
