@@ -82,6 +82,7 @@ module.exports = async function handler(req, res) {
         const qualificationStatus = event.extendedProperties?.private?.qualificationStatus || "confirmed";
         let status = "À venir";
         if (cancelled || qualificationStatus === "cancelled") status = "Annulé";
+        else if (qualificationStatus === "rejected") status = "Refusé";
         else if (qualificationStatus === "pending") status = "En attente d’informations";
         else if (past) status = "Passé";
         else if (bookingStatus === "pending") status = "À valider";
@@ -109,6 +110,7 @@ module.exports = async function handler(req, res) {
           project: meta.project || "",
           bookingStatus,
           qualificationStatus,
+          rejectionReason: event.extendedProperties?.private?.rejectionReason || "",
           meetLink: meetLink(event),
           calendarLink: event.htmlLink || null,
           created: event.created || null,
