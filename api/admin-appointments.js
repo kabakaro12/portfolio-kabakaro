@@ -12,22 +12,18 @@ function parseDescription(description = "") {
     const m = description.match(new RegExp(`^${label}\\s*:\\s*(.+)$`, "mi"));
     return m ? m[1].trim() : "";
   };
-  const projectMatch = description.match(/Projet\s*:\s*\n([\s\S]*?)(?:\n\nRéservation effectuée|$)/i);
+  const projectMatch = description.match(/Projet\s*:\s*\n([\s\S]*?)(?:\n\n(?:Réservation|Demande) effectuée|$)/i);
   return {
     prospect: get("Prospect"),
     email: get("E-mail"),
     phone: get("Téléphone"),
+    country: get("Pays"),
     type: get("Type"),
     projectType: get("Type projet"),
     budget: get("Budget"),
     deadline: get("Délai"),
-    project: projectMatch ? projectMatch[1].trim() : "",
-    phone: get("Téléphone"),
-    projectType: get("Type projet"),
-    budget: get("Budget"),
-    deadline: get("Délai")
-  };
-}
+    project: projectMatch ? projectMatch[1].trim() : ""
+  };}
 
 function meetLink(event) {
   return (
@@ -104,13 +100,15 @@ module.exports = async function handler(req, res) {
           attendeeStatus: attendee.responseStatus || "needsAction",
           name: meta.prospect || attendee.displayName || "",
           email: meta.email || attendee.email || "",
-          phone: meta.phone || event.extendedProperties?.private?.phone || "",
+          phone: meta.phone || event.extendedProperties?.private?.prospectPhone || "",
+          country: meta.country || event.extendedProperties?.private?.country || "",
           type: meta.type || event.summary.replace(/^Rendez-vous portfolio\s*—\s*/i, ""),
           projectType: meta.projectType || event.extendedProperties?.private?.projectType || "",
           budget: meta.budget || event.extendedProperties?.private?.budget || "",
           deadline: meta.deadline || event.extendedProperties?.private?.deadline || "",
           project: meta.project || "",
           bookingStatus,
+          qualificationStatus,
           meetLink: meetLink(event),
           calendarLink: event.htmlLink || null,
           created: event.created || null,
