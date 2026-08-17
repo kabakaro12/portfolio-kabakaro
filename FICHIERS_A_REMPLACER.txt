@@ -1,0 +1,13 @@
+KABAKARO PORTFOLIO V18.2
+
+Pour une mise à jour minimale du rendez-vous, remplace au moins :
+- index.html
+- style.css
+- script.js
+- api/book.js
+- api/admin-appointments.js
+- admin.html
+
+Le ZIP complet peut aussi être envoyé à GitHub en conservant la même arborescence.
+Après le push/upload, vérifie dans Vercel que le dernier déploiement est marqué Ready.
+Sur le site, le champ « Pays * » doit apparaître immédiatement après « Téléphone / WhatsApp * ».

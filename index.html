@@ -572,6 +572,7 @@
     </section>
 
 
+    <!-- V18.2 — qualification RDV + pays visible + finitions mobile -->
     <section id="rendezvous" class="section appointment-section">
       <div class="section-heading reveal">
         <p class="eyebrow">RENDEZ-VOUS</p>
@@ -626,31 +627,40 @@
 
           <div class="form-row">
             <label>Nom et prénom *
-              <input id="bookingName" type="text" placeholder="Votre nom" required>
+              <input id="bookingName" type="text" placeholder="Votre nom" autocomplete="name" required>
             </label>
             <label>E-mail *
-              <input id="bookingEmail" type="email" placeholder="vous@email.com" required>
+              <input id="bookingEmail" type="email" placeholder="vous@email.com" autocomplete="email" required>
             </label>
           </div>
 
-          <div class="form-row">
+          <div class="booking-step booking-contact-step">
             <label>Téléphone / WhatsApp *
-              <input id="bookingPhone" type="tel" placeholder="Ex. 06 12 34 56 78" required>
+              <input id="bookingPhone" type="tel" placeholder="Ex. +33 6 12 34 56 78" autocomplete="tel" required>
             </label>
-            <label>Pays *
-              <select id="bookingCountry" required>
-                <option value="">Choisir votre pays</option>
-                <option>France</option>
-                <option>Guinée</option>
-                <option>Belgique</option>
-                <option>Suisse</option>
-                <option>Canada</option>
-                <option>Sénégal</option>
-                <option>Côte d’Ivoire</option>
-                <option>Maroc</option>
-                <option>Autre pays</option>
-              </select>
-            </label>
+          </div>
+
+          <div class="booking-step booking-country-step">
+            <label for="bookingCountry">Pays *</label>
+            <select id="bookingCountry" name="country" autocomplete="country-name" required>
+              <option value="">Choisir votre pays</option>
+              <option>France</option>
+              <option>Guinée</option>
+              <option>Sénégal</option>
+              <option>Côte d’Ivoire</option>
+              <option>Mali</option>
+              <option>Sierra Leone</option>
+              <option>Liberia</option>
+              <option>Gambie</option>
+              <option>Guinée-Bissau</option>
+              <option>Maroc</option>
+              <option>Belgique</option>
+              <option>Suisse</option>
+              <option>Canada</option>
+              <option>Royaume-Uni</option>
+              <option>États-Unis</option>
+              <option>Autre pays</option>
+            </select>
           </div>
 
           <div class="form-row booking-project-row">

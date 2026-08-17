@@ -301,3 +301,12 @@ Aucune nouvelle variable Vercel n'est nécessaire.
 - Ajout du pays obligatoire dans la demande de rendez-vous.
 - Le pays est transmis dans la notification, Google Calendar et l’administration.
 - Correction visuelle de l’autoremplissage e-mail sur mobile et espacement de l’assistante.
+
+
+## V18.2 — Rendez-vous / Pays / Mobile
+- Champ **Pays** rendu sur une ligne dédiée après Téléphone / WhatsApp afin qu'il soit toujours visible sur mobile.
+- Liste de pays élargie, avec **Autre pays**.
+- Auto-complétion nom, e-mail, téléphone et pays.
+- Champs uniformisés sur iPhone (taille 16 px pour éviter le zoom automatique).
+- Bouton de l'assistante réduit sur mobile et marge ajoutée sous le message de réservation pour éviter les chevauchements.
+- La valeur du pays continue d'être transmise à l'API, enregistrée dans Google Calendar, affichée dans l'admin et incluse dans les e-mails.
