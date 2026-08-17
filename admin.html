@@ -26,7 +26,7 @@
     .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
     .stat{background:rgba(14,27,45,.85);border:1px solid var(--line);padding:18px;border-radius:var(--radius)}
     .stat small{color:var(--muted)}.stat strong{display:block;font-size:30px;margin-top:6px}
-    .filters{display:grid;grid-template-columns:1fr 150px 150px 170px 170px;gap:10px;margin:18px 0}
+    .filters{display:grid;grid-template-columns:minmax(220px,1.4fr) repeat(5,minmax(145px,1fr)) auto;gap:10px;margin:18px 0;align-items:stretch}
     input,select{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px 14px;font-size:15px}
     .list{display:grid;gap:12px}.card{background:rgba(14,27,45,.92);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
     .cardtop{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.when{font-weight:900;font-size:18px}
@@ -152,7 +152,7 @@
     .quote-total strong{font-size:20px;color:var(--accent)}
     @media(max-width:600px){.quote-grid{grid-template-columns:1fr}}
 
-    @media(max-width:760px){.hero{display:block}.actions{margin-top:16px}.stats,.dashboard-stats{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr}.meta{grid-template-columns:1fr}}
+    @media(max-width:760px){.hero{display:block}.actions{margin-top:16px}.stats,.dashboard-stats{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr}.filters #resetFilters{width:100%}.meta{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -213,14 +213,28 @@
       <div class="stat"><small>Relances à faire</small><strong id="statFollowUps">0</strong></div>
     </section>
 
-    <section class="filters">
-      <input id="search" placeholder="Rechercher un client, e-mail, projet…">
+    <section class="filters" aria-label="Filtres des prospects">
+      <input id="search" placeholder="Rechercher nom, e-mail, téléphone, projet…">
+      <select id="periodFilter">
+        <option value="">Toutes les périodes</option>
+        <option value="today">Aujourd’hui</option>
+        <option value="7d">7 prochains jours</option>
+        <option value="30d">30 prochains jours</option>
+        <option value="past">Rendez-vous passés</option>
+      </select>
+      <select id="countryFilter"><option value="">Tous les pays</option></select>
+      <select id="typeFilter"><option value="">Tous les projets</option></select>
       <select id="statusFilter">
         <option value="">Tous les statuts</option>
-        <option>Confirmé</option><option>En attente</option><option>Peut-être</option>
-        <option>Refusé</option><option>À venir</option><option>Passé</option><option>Annulé</option>
+        <option>En attente d’informations</option>
+        <option>Confirmé</option>
+        <option>En attente</option>
+        <option>Peut-être</option>
+        <option>Refusé</option>
+        <option>À venir</option>
+        <option>Passé</option>
+        <option>Annulé</option>
       </select>
-      <select id="typeFilter"><option value="">Tous les types</option></select>
       <select id="crmFilter">
         <option value="">Tous les suivis commerciaux</option>
         <option>Nouveau</option>
@@ -235,6 +249,7 @@
         <option value="future">Relances futures</option>
         <option value="none">Sans relance</option>
       </select>
+      <button id="resetFilters" type="button" class="secondary-btn">Réinitialiser</button>
     </section>
 <section id="appointments" class="list"><div class="loading">Connexion requise.</div></section>
     <div id="pipelineMobileTabs" class="pipeline-mobile-tabs"></div>
@@ -338,6 +353,7 @@ async function loadAppointments(){
     login.style.display = "none";
     sessionStorage.setItem("kk_admin_password", state.password);
     buildTypeFilter();
+    buildCountryFilter();
     render();
     setView(localStorage.getItem("kk_admin_view")==="pipeline" ? "pipeline" : "list");
     window.loadAdminDashboard?.();
@@ -502,18 +518,61 @@ function bindQuoteButtons(){
 
 function buildTypeFilter(){
   const sel = $("typeFilter"), current = sel.value;
-  const types = [...new Set(state.appointments.map(x=>x.type).filter(Boolean))].sort();
-  sel.innerHTML = '<option value="">Tous les types</option>'+types.map(t=>`<option>${esc(t)}</option>`).join("");
-  sel.value = current;
+  const types = [...new Set(state.appointments.map(x=>x.projectType || x.type).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr"));
+  sel.innerHTML = '<option value="">Tous les projets</option>'+types.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join("");
+  sel.value = types.includes(current) ? current : "";
 }
+
+function buildCountryFilter(){
+  const sel = $("countryFilter"), current = sel.value;
+  const countries = [...new Set(state.appointments.map(x=>x.country).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr"));
+  sel.innerHTML = '<option value="">Tous les pays</option>'+countries.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
+  sel.value = countries.includes(current) ? current : "";
+}
+
+function periodMatches(a, period){
+  if(!period) return true;
+  const start = new Date(a.start);
+  if(Number.isNaN(start.getTime())) return false;
+
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfTomorrow = new Date(startOfToday); startOfTomorrow.setDate(startOfTomorrow.getDate()+1);
+
+  if(period==="today") return start>=startOfToday && start<startOfTomorrow;
+  if(period==="past") return start<now;
+
+  const days = period==="7d" ? 7 : period==="30d" ? 30 : 0;
+  if(days){
+    const limit = new Date(now);
+    limit.setDate(limit.getDate()+days);
+    return start>=now && start<=limit;
+  }
+  return true;
+}
+
 function filtered(){
   const q = $("search").value.trim().toLowerCase();
-  const st = $("statusFilter").value, ty = $("typeFilter").value, crm = $("crmFilter").value, fu = $("followUpFilter").value;
+  const st = $("statusFilter").value;
+  const ty = $("typeFilter").value;
+  const country = $("countryFilter").value;
+  const period = $("periodFilter").value;
+  const crm = $("crmFilter").value;
+  const fu = $("followUpFilter").value;
+
   return state.appointments.filter(a=>{
-    const hay=[a.name,a.email,a.project,a.type,a.crmStatus,a.crmNotes,a.crmFollowUpDate,a.crmEstimatedAmount].join(" ").toLowerCase();
+    const hay=[
+      a.name,a.email,a.phone,a.country,a.project,a.type,a.projectType,
+      a.budget,a.deadline,a.crmStatus,a.crmNotes,a.crmFollowUpDate,a.crmEstimatedAmount
+    ].join(" ").toLowerCase();
+
+    const actualProjectType = a.projectType || a.type || "";
+
     return (!q || hay.includes(q)) &&
       (!st || a.status===st) &&
-      (!ty || a.type===ty) &&
+      (!ty || actualProjectType===ty) &&
+      (!country || a.country===country) &&
+      periodMatches(a,period) &&
       (!crm || a.crmStatus===crm) &&
       (!fu || followUpState(a)===fu);
   });
@@ -824,10 +883,17 @@ loginForm.addEventListener("submit", e=>{
 });
 $("refreshBtn").addEventListener("click",loadAppointments);
 $("logoutBtn").addEventListener("click",()=>{sessionStorage.removeItem("kk_admin_password");state.password="";login.style.display="flex";$("password").value="";});
-["search","statusFilter","typeFilter","crmFilter","followUpFilter"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",()=>{
+["search","periodFilter","countryFilter","statusFilter","typeFilter","crmFilter","followUpFilter"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",()=>{
   render();
   if($("pipeline").style.display!=="none") renderPipeline();
 }));
+
+$("resetFilters")?.addEventListener("click",()=>{
+  $("search").value="";
+  ["periodFilter","countryFilter","statusFilter","typeFilter","crmFilter","followUpFilter"].forEach(id=>{ if($(id)) $(id).value=""; });
+  render();
+  if($("pipeline").style.display!=="none") renderPipeline();
+});
 $("listViewBtn").addEventListener("click",()=>setView("list"));
 $("pipelineViewBtn").addEventListener("click",()=>setView("pipeline"));
 
