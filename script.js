@@ -386,7 +386,7 @@ async function loadPublishedTestimonials() {
   const empty = document.getElementById("testimonialEmpty");
   if (!container || !empty) return;
   try {
-    const response = await fetch("/api/testimonials", { cache:"no-store" });
+    const response = await fetch("/api/testimonial", { cache:"no-store" });
     const data = await response.json();
     if (!response.ok || !data.testimonials?.length) return;
     container.replaceChildren(...data.testimonials.map(item => {
