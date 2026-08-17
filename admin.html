@@ -304,7 +304,7 @@ function formatDate(value){
 }
 function badgeClass(status){
   if(["Confirmé","À venir"].includes(status)) return "ok";
-  if(["En attente","Peut-être"].includes(status)) return "wait";
+  if(["En attente","En attente d’informations","Peut-être"].includes(status)) return "wait";
   if(["Refusé","Annulé"].includes(status)) return "bad";
   return "";
 }
@@ -521,9 +521,9 @@ function filtered(){
 function render(){
   const rows = filtered();
   $("statTotal").textContent = rows.length;
-  $("statUpcoming").textContent = rows.filter(a=>["À venir","Confirmé","En attente","Peut-être"].includes(a.status) && new Date(a.start)>=new Date()).length;
+  $("statUpcoming").textContent = rows.filter(a=>["À venir","Confirmé","En attente","En attente d’informations","Peut-être"].includes(a.status) && new Date(a.start)>=new Date()).length;
   $("statConfirmed").textContent = rows.filter(a=>a.status==="Confirmé").length;
-  $("statPending").textContent = rows.filter(a=>a.status==="En attente").length;
+  $("statPending").textContent = rows.filter(a=>["En attente","En attente d’informations"].includes(a.status)).length;
   $("statPipeline").textContent = euro(rows.filter(a=>!["Perdu"].includes(a.crmStatus)).reduce((s,a)=>s+Number(a.crmEstimatedAmount||0),0));
   $("statFollowUps").textContent = rows.filter(a=>followUpState(a)==="due" && !["Gagné","Perdu"].includes(a.crmStatus)).length;
 
@@ -540,10 +540,15 @@ function render(){
       <div class="meta">
         <div><span>Client</span><br><b>${esc(a.name || "—")}</b></div>
         <div><span>E-mail</span><br><b>${esc(a.email || "—")}</b></div>
+        <div><span>Téléphone</span><br><b>${esc(a.phone || "—")}</b></div>
         <div><span>Début</span><br><b>${esc(formatDate(a.start))}</b></div>
         <div><span>Fin</span><br><b>${esc(formatDate(a.end))}</b></div>
       </div>
-      ${a.project ? `<div class="project"><b>Projet</b><br>${esc(a.project)}</div>` : ""}
+      <div class="project"><b>Qualification du projet</b><br>
+        <span class="sub">Type :</span> ${esc(a.projectType || "Non renseigné")} • <span class="sub">Budget :</span> ${esc(a.budget || "Non renseigné")} • <span class="sub">Délai :</span> ${esc(a.deadline || "Non renseigné")}<br><br>
+        <b>Description</b><br>${esc(a.project || "Non renseignée")}
+      </div>
+      ${a.qualificationStatus === "pending" ? `<div class="followup-alert overdue">⚠ Demande à qualifier avant confirmation</div>` : ""}
       ${(a.crmEstimatedAmount || a.crmFollowUpDate) ? `
         <div class="followup-row">
           <div>${a.crmEstimatedAmount ? `<span class="sub">Montant estimé</span><br><span class="amount">${euro(a.crmEstimatedAmount)}</span>` : ""}</div>
@@ -552,10 +557,11 @@ function render(){
         ${followUpState(a)==="due" && !["Gagné","Perdu"].includes(a.crmStatus) ? `<div class="followup-alert overdue">⚠ Relance à faire</div>` : ""}
       ` : ""}
       <div class="links">
+        ${a.qualificationStatus === "pending" ? `<button class="quote-btn request-info" data-id="${esc(a.id)}" type="button">Demander des précisions</button><button class="savecrm confirm-rdv" data-id="${esc(a.id)}" type="button">Confirmer le RDV</button><button class="delete-review cancel-rdv" data-id="${esc(a.id)}" type="button">Annuler</button>` : ""}
         ${a.meetLink ? `<a href="${esc(a.meetLink)}" target="_blank" rel="noopener">Google Meet ↗</a>` : ""}
         ${a.calendarLink ? `<a href="${esc(a.calendarLink)}" target="_blank" rel="noopener">Google Calendar ↗</a>` : ""}
         ${a.email ? `<a href="mailto:${esc(a.email)}">Écrire au client</a>` : ""}
-        <button class="quote-btn open-quote" data-id="${esc(a.id)}" type="button">Créer devis PDF</button>
+        ${a.qualificationStatus !== "pending" ? `<button class="quote-btn open-quote" data-id="${esc(a.id)}" type="button">Créer devis PDF</button>` : ""}
       </div>
 
       <div class="crm">
@@ -586,8 +592,16 @@ function render(){
     btn.addEventListener("click",()=>saveCRM(btn.dataset.id, btn));
   });
   bindQuoteButtons();
+  document.querySelectorAll(".request-info").forEach(btn=>btn.addEventListener("click",()=>{ const a=state.appointments.find(x=>x.id===btn.dataset.id); if(a?.email) location.href=`mailto:${a.email}?subject=${encodeURIComponent("Votre demande de rendez-vous – quelques précisions")}&body=${encodeURIComponent("Bonjour "+(a.name||"")+",\n\nMerci pour votre demande de rendez-vous. Avant de confirmer notre échange, pourriez-vous préciser les éléments manquants concernant votre projet ?\n\nMerci et à bientôt,\nKabakaro")}`; }));
+  document.querySelectorAll(".confirm-rdv").forEach(btn=>btn.addEventListener("click",()=>appointmentAction(btn.dataset.id,"confirm",btn)));
+  document.querySelectorAll(".cancel-rdv").forEach(btn=>btn.addEventListener("click",()=>{if(confirm("Annuler cette demande de rendez-vous ?")) appointmentAction(btn.dataset.id,"cancel",btn);}));
 }
 
+async function appointmentAction(eventId,action,button){
+  button.disabled=true; const old=button.textContent; button.textContent=action==="confirm"?"Confirmation…":"Annulation…";
+  try{ const r=await fetch("/api/admin-appointment-action",{method:"POST",headers:{"Content-Type":"application/json","x-admin-password":state.password},body:JSON.stringify({eventId,action})}); const data=await r.json(); if(!r.ok)throw new Error(data.error||"Action impossible"); await loadAppointments(); }
+  catch(e){alert(e.message);button.disabled=false;button.textContent=old;}
+}
 
 async function saveCRM(eventId, button){
   const select = document.querySelector(`.crm-select[data-id="${CSS.escape(eventId)}"]`);

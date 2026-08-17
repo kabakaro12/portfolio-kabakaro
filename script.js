@@ -94,6 +94,10 @@ bookingForm?.addEventListener("submit", async (e) => {
   const type = document.getElementById("meetingType").value;
   const name = document.getElementById("bookingName").value.trim();
   const email = document.getElementById("bookingEmail").value.trim();
+  const phone = document.getElementById("bookingPhone").value.trim();
+  const projectType = document.getElementById("bookingProjectType").value;
+  const budget = document.getElementById("bookingBudget").value;
+  const deadline = document.getElementById("bookingDeadline").value;
   const project = document.getElementById("bookingProject").value.trim();
   const msg = document.getElementById("bookingMessage");
 
@@ -103,11 +107,17 @@ bookingForm?.addEventListener("submit", async (e) => {
     return;
   }
 
+  if (project.length < 30) {
+    msg.textContent = "Décrivez votre projet en au moins 30 caractères.";
+    msg.classList.remove("success");
+    return;
+  }
+
   const slot = JSON.parse(selectedSlotInput.value);
   const submitBtn = bookingForm.querySelector('button[type="submit"]');
   submitBtn.disabled = true;
-  submitBtn.textContent = "Confirmation en cours…";
-  msg.textContent = "Vérification du créneau dans Google Calendar…";
+  submitBtn.textContent = "Envoi de la demande…";
+  msg.textContent = "Vérification du créneau et envoi de votre demande…";
   msg.classList.remove("success");
 
   try {
@@ -118,6 +128,10 @@ bookingForm?.addEventListener("submit", async (e) => {
         meetingType: type,
         name,
         email,
+        phone,
+        projectType,
+        budget,
+        deadline,
         project,
         start: slot.start,
         end: slot.end
@@ -127,29 +141,23 @@ bookingForm?.addEventListener("submit", async (e) => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Impossible de créer le rendez-vous.");
 
-    const meetAction = data.meetLink
-      ? `<div style="margin-top:10px"><a href="${data.meetLink}" target="_blank" rel="noopener">Ouvrir le lien Google Meet ↗</a></div>`
-      : "";
-
     msg.innerHTML = `
-      <strong>Votre rendez-vous a bien été envoyé.</strong><br>
-      Rendez-vous confirmé pour <strong>${slot.label}</strong>.<br>
-      Vous recevrez également l'invitation Google Calendar par e-mail.<br><br>
-      <strong>Nous vous recontacterons pour la suite.</strong>
-      Il n'est pas nécessaire de nous relancer ou de refaire une réservation pour le même rendez-vous.
-      ${meetAction}
+      <strong>✓ Votre demande de rendez-vous a bien été envoyée.</strong><br>
+      Créneau demandé : <strong>${slot.label}</strong>.<br><br>
+      Votre projet va être examiné avant confirmation définitive.
+      Vous recevrez le lien Google Meet et l’invitation Google Calendar après validation.
     `;
     msg.classList.add("success");
     bookingForm.reset();
     slotsContainer.innerHTML = "";
     selectedSlotInput.value = "";
-    setAvailabilityStatus("Rendez-vous enregistré.", "ok");
+    setAvailabilityStatus("Demande enregistrée — en attente de validation.", "ok");
   } catch (err) {
     msg.textContent = err.message || "Une erreur est survenue.";
     msg.classList.remove("success");
   } finally {
     submitBtn.disabled = false;
-    submitBtn.textContent = "Confirmer mon rendez-vous";
+    submitBtn.textContent = "Envoyer ma demande de rendez-vous";
   }
 });
 

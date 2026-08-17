@@ -589,12 +589,12 @@
             <span>✓ Fonctionnalités prioritaires</span>
             <span>✓ Budget indicatif</span>
             <span>✓ Prochaines étapes</span>
-            <span>✓ Lien Google Meet automatique</span>
+            <span>✓ Validation avant Google Meet</span>
           </div>
           <div class="ai-preview">
             <span>Google Calendar + Meet</span>
             <strong>Rendez-vous automatisés</strong>
-            <p>Les disponibilités sont lues depuis Google Calendar. Après confirmation, l’événement est créé et un lien Google Meet est généré automatiquement.</p>
+            <p>Les disponibilités sont lues depuis Google Calendar. Votre demande est d’abord vérifiée, puis le lien Google Meet est créé après validation.</p>
           </div>
         </div>
 
@@ -625,20 +625,48 @@
           </div>
 
           <div class="form-row">
-            <label>Nom
+            <label>Nom et prénom *
               <input id="bookingName" type="text" placeholder="Votre nom" required>
             </label>
-            <label>E-mail
+            <label>E-mail *
               <input id="bookingEmail" type="email" placeholder="vous@email.com" required>
             </label>
           </div>
 
-          <label>Votre projet
-            <textarea id="bookingProject" rows="4" placeholder="Décrivez brièvement votre besoin..."></textarea>
+          <div class="form-row">
+            <label>Téléphone / WhatsApp *
+              <input id="bookingPhone" type="tel" placeholder="Ex. 06 12 34 56 78" required>
+            </label>
+            <label>Type de projet *
+              <select id="bookingProjectType" required>
+                <option value="">Choisir</option>
+                <option>Site vitrine</option><option>Site e-commerce</option><option>Application web</option>
+                <option>Application mobile</option><option>Maintenance / amélioration</option><option>Référencement / SEO</option><option>Autre</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="form-row">
+            <label>Budget indicatif *
+              <select id="bookingBudget" required>
+                <option value="">Choisir</option><option>Moins de 500 €</option><option>500 – 1 000 €</option>
+                <option>1 000 – 2 500 €</option><option>2 500 € et +</option><option>Je ne sais pas encore</option>
+              </select>
+            </label>
+            <label>Délai souhaité *
+              <select id="bookingDeadline" required>
+                <option value="">Choisir</option><option>Dès que possible</option><option>Sous 1 mois</option>
+                <option>1 – 3 mois</option><option>Plus tard / à définir</option>
+              </select>
+            </label>
+          </div>
+
+          <label>Décrivez votre besoin *
+            <textarea id="bookingProject" rows="4" minlength="30" required placeholder="Décrivez votre activité, votre objectif et les principales fonctionnalités souhaitées..."></textarea>
           </label>
 
-          <button class="btn primary full-width" type="submit">Confirmer mon rendez-vous</button>
-          <p class="booking-note" id="bookingMessage">Après confirmation, le rendez-vous est ajouté à Google Calendar et le lien Google Meet est envoyé avec l’invitation.</p>
+          <button class="btn primary full-width" type="submit">Envoyer ma demande de rendez-vous</button>
+          <p class="booking-note" id="bookingMessage">Votre demande sera examinée avant confirmation. Le lien Google Meet et l’invitation Calendar seront envoyés uniquement après validation.</p>
         </form>
       </div>
     </section>
