@@ -1,200 +1,35 @@
 const { getAccessToken, calendarId, timezone, CALENDAR_API } = require("../lib/google");
 
 async function checkBusy(accessToken, start, end) {
-  const response = await fetch(`${CALENDAR_API}/freeBusy`, {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${accessToken}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      timeMin: start,
-      timeMax: end,
-      timeZone: timezone(),
-      items: [{ id: calendarId() }]
-    })
-  });
+  const response = await fetch(`${CALENDAR_API}/freeBusy`, { method:"POST", headers:{Authorization:`Bearer ${accessToken}`,"Content-Type":"application/json"}, body:JSON.stringify({timeMin:start,timeMax:end,timeZone:timezone(),items:[{id:calendarId()}]}) });
   const data = await response.json();
   if (!response.ok) throw new Error("Vérification du créneau impossible.");
   return (data.calendars?.[calendarId()]?.busy || []).length > 0;
 }
-
-
-async function sendOwnerNotification({ meetingType, name, email, project, start, end, meetLink, htmlLink }) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const ownerEmail = process.env.NOTIFICATION_EMAIL || "kabakaro16@gmail.com";
-  const fromEmail = process.env.NOTIFICATION_FROM || "Kabakaro Portfolio <onboarding@resend.dev>";
-
-  // The booking must never fail only because the notification e-mail is not configured.
-  if (!apiKey) {
-    console.warn("[notification] RESEND_API_KEY absent : rendez-vous créé, notification e-mail non envoyée.");
-    return { sent: false, reason: "not_configured" };
-  }
-
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-  const fmtDate = new Intl.DateTimeFormat("fr-FR", {
-    timeZone: timezone(),
-    weekday: "long",
-    day: "2-digit",
-    month: "long",
-    year: "numeric"
-  });
-  const fmtTime = new Intl.DateTimeFormat("fr-FR", {
-    timeZone: timezone(),
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-
-  const dateLabel = fmtDate.format(startDate);
-  const startLabel = fmtTime.format(startDate);
-  const endLabel = fmtTime.format(endDate);
-
-  const safeProject = (project || "À préciser").replace(/[<>&]/g, c => ({
-    "<": "&lt;", ">": "&gt;", "&": "&amp;"
-  }[c]));
-  const safeName = String(name).replace(/[<>&]/g, c => ({
-    "<": "&lt;", ">": "&gt;", "&": "&amp;"
-  }[c]));
-  const safeEmail = String(email).replace(/[<>&]/g, c => ({
-    "<": "&lt;", ">": "&gt;", "&": "&amp;"
-  }[c]));
-  const safeType = String(meetingType).replace(/[<>&]/g, c => ({
-    "<": "&lt;", ">": "&gt;", "&": "&amp;"
-  }[c]));
-
-  const subject = `Nouveau rendez-vous — ${dateLabel} à ${startLabel}`;
-
-  const html = `
-    <div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;color:#111827">
-      <h2 style="margin-bottom:8px">Nouveau rendez-vous réservé</h2>
-      <p>Un nouveau rendez-vous vient d'être confirmé depuis ton portfolio.</p>
-      <div style="background:#f3f4f6;border-radius:12px;padding:18px;margin:18px 0">
-        <p><strong>Date :</strong> ${dateLabel}</p>
-        <p><strong>Horaire :</strong> ${startLabel} – ${endLabel}</p>
-        <p><strong>Type :</strong> ${safeType}</p>
-        <p><strong>Client :</strong> ${safeName}</p>
-        <p><strong>E-mail :</strong> ${safeEmail}</p>
-        <p><strong>Projet :</strong><br>${safeProject.replace(/\n/g, "<br>")}</p>
-      </div>
-      ${meetLink ? `<p><a href="${meetLink}" style="display:inline-block;background:#0f766e;color:white;text-decoration:none;padding:12px 18px;border-radius:8px">Ouvrir Google Meet</a></p>` : ""}
-      ${htmlLink ? `<p><a href="${htmlLink}">Voir le rendez-vous dans Google Calendar</a></p>` : ""}
-      <p style="color:#6b7280;font-size:13px">Notification automatique — portfolio-kabakaro.vercel.app</p>
-    </div>
-  `;
-
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${apiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      from: fromEmail,
-      to: [ownerEmail],
-      subject,
-      html
-    })
-  });
-
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    console.error("[notification] Resend error", response.status, data?.message || data?.name || "unknown");
-    return { sent: false, reason: "resend_error" };
-  }
-
-  return { sent: true, id: data.id || null };
+const esc = v => String(v||"").replace(/[<>&]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]));
+async function notify({meetingType,name,email,phone,projectType,budget,deadline,project,start,end}){
+  const key=process.env.RESEND_API_KEY; if(!key) return {sent:false};
+  const owner=process.env.NOTIFICATION_EMAIL||"kabakaro16@gmail.com";
+  const from=process.env.NOTIFICATION_FROM||"Kabakaro Portfolio <onboarding@resend.dev>";
+  const fmt=new Intl.DateTimeFormat("fr-FR",{timeZone:timezone(),weekday:"long",day:"2-digit",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit"});
+  const html=`<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;color:#111827"><h2>Nouvelle demande de rendez-vous à qualifier</h2><p><b>Statut :</b> En attente de validation</p><div style="background:#f3f4f6;border-radius:12px;padding:18px"><p><b>Créneau :</b> ${esc(fmt.format(new Date(start)))}</p><p><b>Client :</b> ${esc(name)}</p><p><b>E-mail :</b> ${esc(email)}</p><p><b>Téléphone :</b> ${esc(phone)}</p><p><b>Rendez-vous :</b> ${esc(meetingType)}</p><p><b>Type de projet :</b> ${esc(projectType)}</p><p><b>Budget :</b> ${esc(budget)}</p><p><b>Délai :</b> ${esc(deadline)}</p><p><b>Description :</b><br>${esc(project).replace(/\n/g,"<br>")}</p></div><p>Valide la demande depuis l'espace administrateur pour créer Google Meet et envoyer l'invitation au client.</p></div>`;
+  const r=await fetch("https://api.resend.com/emails",{method:"POST",headers:{Authorization:`Bearer ${key}`,"Content-Type":"application/json"},body:JSON.stringify({from,to:[owner],subject:`Demande RDV à qualifier — ${name}`,html})});
+  return {sent:r.ok};
 }
-
-module.exports = async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).json({ error: "Méthode non autorisée." });
-
-  try {
-    const { meetingType, name, email, project, start, end } = req.body || {};
-    if (!meetingType || !name || !email || !start || !end) {
-      return res.status(400).json({ error: "Informations de rendez-vous incomplètes." });
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return res.status(400).json({ error: "Adresse e-mail invalide." });
-    }
-
-    const accessToken = await getAccessToken();
-
-    // Always re-check immediately before creating to prevent double booking.
-    if (await checkBusy(accessToken, start, end)) {
-      return res.status(409).json({ error: "Ce créneau vient d'être réservé. Choisissez-en un autre." });
-    }
-
-    const event = {
-      summary: `Rendez-vous portfolio — ${meetingType}`,
-      description:
-`Prospect : ${name}
-E-mail : ${email}
-Type : ${meetingType}
-
-Projet :
-${project || "À préciser"}
-
-Réservation effectuée depuis portfolio-kabakaro.vercel.app`,
-      start: { dateTime: start, timeZone: timezone() },
-      end: { dateTime: end, timeZone: timezone() },
-      attendees: [{ email }],
-      conferenceData: {
-        createRequest: {
-          requestId: `portfolio-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
-          conferenceSolutionKey: { type: "hangoutsMeet" }
-        }
-      },
-      reminders: {
-        useDefault: false,
-        overrides: [
-          { method: "email", minutes: 24 * 60 },
-          { method: "popup", minutes: 30 }
-        ]
-      }
-    };
-
-    const createRes = await fetch(
-      `${CALENDAR_API}/calendars/${encodeURIComponent(calendarId())}/events?sendUpdates=all&conferenceDataVersion=1`,
-      {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${accessToken}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(event)
-      }
-    );
-
-    const created = await createRes.json();
-    if (!createRes.ok) throw new Error("Google Calendar n'a pas pu créer le rendez-vous.");
-
-    const meetLink =
-      created.hangoutLink ||
-      created.conferenceData?.entryPoints?.find(p => p.entryPointType === "video")?.uri ||
-      null;
-
-    const notification = await sendOwnerNotification({
-      meetingType,
-      name,
-      email,
-      project,
-      start,
-      end,
-      meetLink,
-      htmlLink: created.htmlLink || null
-    });
-
-    return res.status(201).json({
-      ok: true,
-      eventId: created.id,
-      htmlLink: created.htmlLink || null,
-      meetLink,
-      ownerNotificationSent: notification.sent
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "La réservation automatique n'est pas encore configurée sur le serveur." });
-  }
+module.exports=async function handler(req,res){
+  if(req.method!=="POST") return res.status(405).json({error:"Méthode non autorisée."});
+  try{
+    const {meetingType,name,email,phone,projectType,budget,deadline,project,start,end}=req.body||{};
+    if(!meetingType||!name||!email||!phone||!projectType||!budget||!deadline||!project||!start||!end) return res.status(400).json({error:"Merci de renseigner toutes les informations du projet."});
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({error:"Adresse e-mail invalide."});
+    if(String(project).trim().length<30) return res.status(400).json({error:"Décrivez votre projet en au moins 30 caractères."});
+    const token=await getAccessToken();
+    if(await checkBusy(token,start,end)) return res.status(409).json({error:"Ce créneau vient d'être réservé. Choisissez-en un autre."});
+    const description=`Prospect : ${name}\nE-mail : ${email}\nTéléphone : ${phone}\nType : ${meetingType}\nType projet : ${projectType}\nBudget : ${budget}\nDélai : ${deadline}\n\nProjet :\n${project}\n\nDemande effectuée depuis portfolio-kabakaro.vercel.app`;
+    const event={summary:`Rendez-vous portfolio — ${meetingType}`,description,start:{dateTime:start,timeZone:timezone()},end:{dateTime:end,timeZone:timezone()},transparency:"opaque",extendedProperties:{private:{qualificationStatus:"pending",crmStatus:"Nouveau",prospectName:name,prospectEmail:email,prospectPhone:phone,projectType,budget,deadline}}};
+    const r=await fetch(`${CALENDAR_API}/calendars/${encodeURIComponent(calendarId())}/events`,{method:"POST",headers:{Authorization:`Bearer ${token}`,"Content-Type":"application/json"},body:JSON.stringify(event)});
+    const created=await r.json(); if(!r.ok) throw new Error("Google Calendar n'a pas pu enregistrer la demande.");
+    const notification=await notify({meetingType,name,email,phone,projectType,budget,deadline,project,start,end});
+    return res.status(201).json({ok:true,eventId:created.id,status:"pending",ownerNotificationSent:notification.sent});
+  }catch(e){console.error(e);return res.status(500).json({error:"La demande de rendez-vous n'a pas pu être enregistrée."});}
 };

@@ -16,8 +16,16 @@ function parseDescription(description = "") {
   return {
     prospect: get("Prospect"),
     email: get("E-mail"),
+    phone: get("Téléphone"),
     type: get("Type"),
-    project: projectMatch ? projectMatch[1].trim() : ""
+    projectType: get("Type projet"),
+    budget: get("Budget"),
+    deadline: get("Délai"),
+    project: projectMatch ? projectMatch[1].trim() : "",
+    phone: get("Téléphone"),
+    projectType: get("Type projet"),
+    budget: get("Budget"),
+    deadline: get("Délai")
   };
 }
 
@@ -74,9 +82,14 @@ module.exports = async function handler(req, res) {
         const cancelled = event.status === "cancelled";
         const past = start ? new Date(start) < now : false;
 
+        const bookingStatus = event.extendedProperties?.private?.bookingStatus || "legacy";
+        const qualificationStatus = event.extendedProperties?.private?.qualificationStatus || "confirmed";
         let status = "À venir";
-        if (cancelled) status = "Annulé";
+        if (cancelled || qualificationStatus === "cancelled") status = "Annulé";
+        else if (qualificationStatus === "pending") status = "En attente d’informations";
         else if (past) status = "Passé";
+        else if (bookingStatus === "pending") status = "À valider";
+        else if (bookingStatus === "confirmed") status = "Confirmé";
         else if (attendee.responseStatus === "accepted") status = "Confirmé";
         else if (attendee.responseStatus === "declined") status = "Refusé";
         else if (attendee.responseStatus === "tentative") status = "Peut-être";
@@ -91,8 +104,13 @@ module.exports = async function handler(req, res) {
           attendeeStatus: attendee.responseStatus || "needsAction",
           name: meta.prospect || attendee.displayName || "",
           email: meta.email || attendee.email || "",
+          phone: meta.phone || event.extendedProperties?.private?.phone || "",
           type: meta.type || event.summary.replace(/^Rendez-vous portfolio\s*—\s*/i, ""),
+          projectType: meta.projectType || event.extendedProperties?.private?.projectType || "",
+          budget: meta.budget || event.extendedProperties?.private?.budget || "",
+          deadline: meta.deadline || event.extendedProperties?.private?.deadline || "",
           project: meta.project || "",
+          bookingStatus,
           meetLink: meetLink(event),
           calendarLink: event.htmlLink || null,
           created: event.created || null,
