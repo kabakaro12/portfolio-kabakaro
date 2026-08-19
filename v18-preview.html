@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kabakaro Dev — Aperçu V18</title>
+<style>
+:root{--bg:#07111f;--card:#0f1d31;--text:#f5f7fb;--muted:#9babc2;--accent:#31d0aa;--border:rgba(255,255,255,.1)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;line-height:1.6}
+main{max-width:1120px;margin:auto;padding:40px 20px 80px}.hero{min-height:75vh;display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:50px}
+.badge{font-size:12px;letter-spacing:.16em;font-weight:800;color:var(--accent)}h1{font-size:clamp(46px,7vw,78px);line-height:1.02;margin:16px 0}h1 span{color:var(--accent)}
+.lead{color:var(--muted);font-size:18px;max-width:650px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin:26px 0}.btn{padding:13px 18px;border-radius:9px;border:1px solid var(--border);font-weight:700}.primary{background:var(--accent);color:#03261e}
+.proof{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:28px}.proof div,.card,.case article{border:1px solid var(--border);border-radius:14px;background:var(--card);padding:18px}.proof strong{display:block}.proof span{font-size:11px;color:var(--muted)}
+.code{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:25px;color:#b7c4d8;font-family:monospace}section{padding-top:80px}.title{font-size:42px;margin:8px 0 30px}
+.projects{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.card.main{grid-row:span 2}.card h3{font-size:26px;margin:8px 0}.card p{color:var(--muted)}.tags span{display:inline-block;border:1px solid var(--border);border-radius:99px;padding:5px 9px;font-size:10px;margin:3px}
+.case{margin-top:20px;padding:24px;border:1px solid rgba(49,208,170,.25);border-radius:18px}.casegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.case article p{color:var(--muted);font-size:12px}
+@media(max-width:800px){.hero,.projects{grid-template-columns:1fr}.proof,.casegrid{grid-template-columns:1fr 1fr}.card.main{grid-row:auto}}
+@media(max-width:520px){.actions .btn{width:100%;text-align:center}.proof,.casegrid{grid-template-columns:1fr}}
+</style></head>
+<body><main>
+<section class="hero"><div><p class="badge">DÉVELOPPEUR WEB • MOBILE • IA</p><h1>Je transforme des idées<br><span>en produits numériques.</span></h1><p class="lead">Développeur Full Stack basé à Amiens. Applications web/mobile, outils métier et automatisation.</p><div class="actions"><span class="btn primary">👨‍💻 Recruteur — Voir mon CV</span><span class="btn">🚀 Entreprise — Demander un devis</span></div><div class="proof"><div><strong>8+</strong><span>projets</span></div><div><strong>Web & Mobile</strong><span>responsive</span></div><div><strong>React • Django</strong><span>Full Stack</span></div><div><strong>IA</strong><span>automatisation</span></div></div></div>
+<div class="code">const developer = {<br>&nbsp;&nbsp;name: "Kabakaro Keita",<br>&nbsp;&nbsp;focus: ["Web","Mobile","APIs","AI"],<br>&nbsp;&nbsp;stack: ["React","Django","Node","PostgreSQL"]<br>};</div></section>
+<section><p class="badge">PROJETS SÉLECTIONNÉS</p><h2 class="title">Des projets qui montrent ce que je sais construire.</h2><div class="projects"><article class="card main"><p class="badge">MOBILITÉ • WEB & MOBILE</p><h3>G-Transport</h3><p>Réservation, gares, compagnies, billets QR, paiements et administration.</p><div class="tags"><span>Next.js</span><span>PostgreSQL</span><span>QR Code</span></div></article><article class="card"><p class="badge">SERVICES • WORKFLOW</p><h3>3D Services</h3><p>Devis, comptes clients, paiement, notifications et interventions.</p></article><article class="card"><p class="badge">PORTFOLIO • AUTOMATISATION</p><h3>Kabakaro Dev</h3><p>Devis, rendez-vous, Calendar/Meet, assistant, SEO et administration.</p></article></div>
+<div class="case"><p class="badge">ÉTUDE DE CAS — G-TRANSPORT</p><div class="casegrid"><article><strong>01 Problème</strong><p>Centraliser transport et réservations.</p></article><article><strong>02 Solution</strong><p>Plateforme multi-rôles.</p></article><article><strong>03 Architecture</strong><p>Web/mobile, API et PostgreSQL.</p></article><article><strong>04 Résultat</strong><p>Prototype extensible multi-compagnies.</p></article></div></div></section>
+</main></body></html>
