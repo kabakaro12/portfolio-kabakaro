@@ -1,4 +1,5 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
       "source": "/api/google-calendar/auth",
@@ -7,11 +8,34 @@
     {
       "source": "/api/google-calendar/callback",
       "destination": "/api/google-calendar-callback"
+    },
+    {
+      "source": "/api/auth/register",
+      "destination": "/api/auth-register"
+    },
+    {
+      "source": "/api/auth/login",
+      "destination": "/api/auth-login"
+    },
+    {
+      "source": "/api/auth/me",
+      "destination": "/api/auth-me"
+    },
+    {
+      "source": "/api/cv",
+      "destination": "/api/cv-list"
+    },
+    {
+      "source": "/api/cv/duplicate",
+      "destination": "/api/cv-duplicate"
+    },
+    {
+      "source": "/api/cv/:id",
+      "destination": "/api/cv-item?id=:id"
     }
   ],
   "functions": {
-    "api/**/*.js": {
-      "memory": 128,
+    "api/*.js": {
       "maxDuration": 10
     }
   }
