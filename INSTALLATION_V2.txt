@@ -1,0 +1,49 @@
+KABAKARO DEV — CV V2 COMPTES UTILISATEURS
+=========================================
+
+1) AJOUTER TOUS LES FICHIERS DU ZIP À LA RACINE DU DÉPÔT
+   (les dossiers api/ et lib/ doivent garder leur structure)
+
+2) REMPLACER package.json PAR CELUI DU ZIP
+
+3) CREER LA BASE POSTGRESQL
+   - Ouvrir votre fournisseur PostgreSQL (Vercel Postgres / Neon / Supabase Postgres)
+   - Exécuter schema_cv_v2.sql
+
+4) VARIABLES D'ENVIRONNEMENT VERCEL
+   POSTGRES_URL = chaîne de connexion PostgreSQL
+   AUTH_JWT_SECRET = une longue chaîne aléatoire privée (minimum 32 caractères)
+
+5) DANS creer-mon-cv.html
+   Avant </body>, remplacer :
+     <script src="cv-builder.js"></script>
+   par :
+     <script src="auth-client.js"></script>
+     <script src="cv-builder.js"></script>
+     <script src="cv-cloud-sync.js"></script>
+
+6) DANS index.html, AJOUTER AU MENU
+   <a href="creer-mon-cv.html">Créer mon CV</a>
+   <a href="connexion.html">Espace CV</a>
+
+7) DEPLOYER SUR VERCEL
+
+FONCTIONNALITES V2
+==================
+- Inscription
+- Connexion
+- Session JWT 7 jours
+- Mot de passe hashé bcrypt
+- Mes CV
+- Plusieurs CV par utilisateur
+- Modifier
+- Dupliquer
+- Supprimer
+- Sauvegarde PostgreSQL
+- Utilisation anonyme toujours possible avec sauvegarde locale
+- Export PDF de la V1 conservé
+
+SECURITE
+========
+- Ne jamais mettre POSTGRES_URL ou AUTH_JWT_SECRET dans le code public.
+- Les variables doivent rester uniquement dans Vercel > Settings > Environment Variables.

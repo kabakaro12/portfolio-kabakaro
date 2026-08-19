@@ -1,12 +1,15 @@
 {
-  "name": "kabakaro-portfolio-v15",
-  "version": "17.8.2",
+  "name": "kabakaro-portfolio-v19-cv-accounts",
+  "version": "19.0.0",
   "private": true,
-  "description": "Portfolio Kabakaro CRM avec assistante automatique gratuite",
+  "description": "Portfolio Kabakaro Dev avec espace utilisateur et créateur de CV",
   "engines": {
     "node": "22.x"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.1",
     "pdfkit": "^0.15.2"
   }
 }
