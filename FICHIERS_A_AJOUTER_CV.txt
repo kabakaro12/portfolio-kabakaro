@@ -1,0 +1,13 @@
+FICHIERS À AJOUTER DANS LE DÉPÔT
+================================
+creer-mon-cv.html
+cv-builder.css
+cv-builder.js
+
+INDEX.HTML — AJOUTER DANS <nav class="nav">
+===========================================
+<a href="creer-mon-cv.html">Créer mon CV</a>
+
+OPTIONNEL DANS LE HERO
+======================
+<a class="btn secondary" href="creer-mon-cv.html">📄 Créer mon CV gratuitement</a>

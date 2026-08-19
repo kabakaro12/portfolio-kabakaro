@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Créez gratuitement un CV professionnel avec Kabakaro Dev. Aperçu en direct, modèles moderne et classique, sauvegarde locale et export PDF.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://www.kabakarodev.fr/creer-mon-cv.html">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <title>Créer mon CV | Kabakaro Dev</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="cv-builder.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">KK<span>.</span></a>
+  <div class="topbar-title">
+    <strong>Kabakaro Dev</strong>
+    <span>Créateur de CV</span>
+  </div>
+  <div class="top-actions">
+    <button class="btn ghost" id="saveBtn">Enregistrer</button>
+    <button class="btn primary" id="printBtn">Télécharger PDF</button>
+  </div>
+</header>
+
+<main class="app-shell">
+  <aside class="editor">
+    <div class="intro">
+      <p class="eyebrow">OUTIL GRATUIT</p>
+      <h1>Créer mon CV</h1>
+      <p>Remplissez vos informations. Le CV se met à jour en direct.</p>
+    </div>
+
+    <div class="steps" role="tablist" aria-label="Étapes du CV">
+      <button class="step active" data-step="1"><span>1</span>Identité</button>
+      <button class="step" data-step="2"><span>2</span>Profil</button>
+      <button class="step" data-step="3"><span>3</span>Expériences</button>
+      <button class="step" data-step="4"><span>4</span>Formation</button>
+      <button class="step" data-step="5"><span>5</span>Compétences</button>
+    </div>
+
+    <section class="panel">
+      <div class="step-panel active" data-panel="1">
+        <h2>Informations personnelles</h2>
+        <p class="muted">Les informations visibles en haut du CV.</p>
+        <div class="grid2">
+          <label>Prénom<input id="firstName" autocomplete="given-name"></label>
+          <label>Nom<input id="lastName" autocomplete="family-name"></label>
+        </div>
+        <label>Titre professionnel<input id="professionalTitle" placeholder="Ex. Développeur Front-End"></label>
+        <div class="grid2">
+          <label>Email<input id="email" type="email" autocomplete="email"></label>
+          <label>Téléphone<input id="phone" type="tel" autocomplete="tel"></label>
+        </div>
+        <label>Ville<input id="city" autocomplete="address-level2"></label>
+        <label>LinkedIn<input id="linkedin" placeholder="linkedin.com/in/..."></label>
+        <label>GitHub<input id="github" placeholder="github.com/..."></label>
+        <label>Portfolio<input id="portfolio" placeholder="https://..."></label>
+      </div>
+
+      <div class="step-panel" data-panel="2">
+        <h2>Profil professionnel</h2>
+        <p class="muted">Présentez votre valeur en quelques lignes.</p>
+        <label>Résumé<textarea id="summary" rows="9" maxlength="1200" placeholder="Décrivez votre profil, vos points forts et votre objectif..."></textarea></label>
+        <div class="counter"><span id="summaryCount">0</span>/1200</div>
+      </div>
+
+      <div class="step-panel" data-panel="3">
+        <div class="panel-head">
+          <div><h2>Expériences</h2><p class="muted">Ajoutez les expériences les plus pertinentes.</p></div>
+          <button class="mini-btn" id="addExperience">+ Ajouter</button>
+        </div>
+        <div id="experiences"></div>
+      </div>
+
+      <div class="step-panel" data-panel="4">
+        <div class="panel-head">
+          <div><h2>Formation</h2><p class="muted">Diplômes, certifications et parcours.</p></div>
+          <button class="mini-btn" id="addEducation">+ Ajouter</button>
+        </div>
+        <div id="educations"></div>
+      </div>
+
+      <div class="step-panel" data-panel="5">
+        <div class="panel-head">
+          <div><h2>Compétences & langues</h2><p class="muted">Mettez en avant vos points forts.</p></div>
+        </div>
+
+        <h3>Compétences</h3>
+        <div id="skills"></div>
+        <button class="mini-btn" id="addSkill">+ Ajouter une compétence</button>
+
+        <h3 class="mt">Langues</h3>
+        <div id="languages"></div>
+        <button class="mini-btn" id="addLanguage">+ Ajouter une langue</button>
+
+        <h3 class="mt">Modèle</h3>
+        <div class="template-switch">
+          <button data-template="classic" class="active">Classique</button>
+          <button data-template="modern">Moderne</button>
+        </div>
+      </div>
+
+      <div class="bottom-actions">
+        <button class="btn ghost" id="prevBtn">Retour</button>
+        <button class="btn primary" id="nextBtn">Continuer</button>
+      </div>
+    </section>
+
+    <p class="privacy-note">Vos données restent dans votre navigateur dans cette V1. Elles ne sont pas envoyées à un serveur.</p>
+  </aside>
+
+  <section class="preview-area" aria-label="Aperçu du CV">
+    <div class="preview-toolbar">
+      <span>Aperçu A4</span>
+      <button id="resetBtn" class="link-btn">Nouveau CV</button>
+    </div>
+
+    <article class="resume classic" id="resume">
+      <header class="resume-header">
+        <h2 id="rName">Votre nom</h2>
+        <p class="job-title" id="rTitle">Votre titre professionnel</p>
+        <p class="contact-line" id="rContact">email • téléphone • ville</p>
+        <p class="link-line" id="rLinks"></p>
+      </header>
+
+      <section class="resume-section" id="summarySection" hidden>
+        <h3>Profil</h3>
+        <p id="rSummary"></p>
+      </section>
+
+      <section class="resume-section" id="experienceSection" hidden>
+        <h3>Expériences</h3>
+        <div id="rExperiences"></div>
+      </section>
+
+      <section class="resume-section" id="educationSection" hidden>
+        <h3>Formation</h3>
+        <div id="rEducations"></div>
+      </section>
+
+      <div class="resume-columns">
+        <section class="resume-section">
+          <h3>Compétences</h3>
+          <div class="tags" id="rSkills"></div>
+        </section>
+        <section class="resume-section">
+          <h3>Langues</h3>
+          <div id="rLanguages"></div>
+        </section>
+      </div>
+    </article>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="cv-builder.js"></script>
+</body>
+</html>
