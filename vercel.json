@@ -1,0 +1,18 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/google-calendar/auth",
+      "destination": "/api/google-calendar-auth"
+    },
+    {
+      "source": "/api/google-calendar/callback",
+      "destination": "/api/google-calendar-callback"
+    }
+  ],
+  "functions": {
+    "api/**/*.js": {
+      "memory": 128,
+      "maxDuration": 10
+    }
+  }
+}
