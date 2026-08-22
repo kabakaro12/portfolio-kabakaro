@@ -1,0 +1,23 @@
+MISE À JOUR CONNEXION + PORTFOLIO
+
+1. Remplacer dans GitHub :
+   - connexion.html
+   - espace-client.css
+
+2. Ne pas remplacer auth-client.js : la logique de connexion existante est conservée.
+
+3. Pour créer le lien dans le menu principal du portfolio, ajouter dans <nav class="nav"> de index.html :
+   <a href="connexion.html">Connexion</a>
+
+   Idéalement juste avant le bouton "Demander un devis".
+
+4. Une fois le commit effectué, Vercel redéploiera automatiquement.
+
+Améliorations apportées à connexion.html :
+- design cohérent avec le portfolio
+- bouton Retour au portfolio plus visible
+- bouton Voir le portfolio en bas
+- meilleure présentation mobile
+- explication claire de l'espace client
+- champs avec placeholders et autocomplete
+- noindex sur la page de connexion
