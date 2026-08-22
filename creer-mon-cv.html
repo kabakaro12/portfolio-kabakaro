@@ -2,25 +2,24 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Créez gratuitement un CV professionnel avec Kabakaro Dev. Aperçu en direct, modèles moderne et classique, sauvegarde locale et export PDF.">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Créez, importez et améliorez votre CV avec Kabakaro Dev : modèles, couleurs, aperçu en direct, IA et export PDF.">
   <meta name="robots" content="index,follow">
-  <link rel="canonical" href="https://www.kabakarodev.fr/creer-mon-cv.html">
+  <title>CV gratuit avec IA | Kabakaro Dev</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <title>Créer mon CV | Kabakaro Dev</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="cv-builder.css">
+  <link rel="stylesheet" href="cv-builder-v2.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="index.html">KK<span>.</span></a>
-  <div class="topbar-title">
-    <strong>Kabakaro Dev</strong>
-    <span>Créateur de CV</span>
-  </div>
+  <div class="topbar-title"><strong>Kabakaro Dev</strong><span>CV gratuit + IA</span></div>
   <div class="top-actions">
+    <a class="btn ghost" href="connexion.html">Mon espace</a>
     <button class="btn ghost" id="saveBtn">Enregistrer</button>
     <button class="btn primary" id="printBtn">Télécharger PDF</button>
   </div>
@@ -28,136 +27,117 @@
 
 <main class="app-shell">
   <aside class="editor">
-    <div class="intro">
-      <p class="eyebrow">OUTIL GRATUIT</p>
-      <h1>Créer mon CV</h1>
-      <p>Remplissez vos informations. Le CV se met à jour en direct.</p>
-    </div>
+    <section class="intro">
+      <p class="eyebrow">CRÉATEUR DE CV V2</p>
+      <h1>Créez un CV à votre image.</h1>
+      <p>Importez un CV existant, choisissez un style et une couleur, puis utilisez l’IA pour l’améliorer.</p>
+    </section>
 
-    <div class="steps" role="tablist" aria-label="Étapes du CV">
+    <section class="quick-actions">
+      <label class="upload-card">
+        <input id="cvFile" type="file" accept=".pdf,.docx,.txt" hidden>
+        <span class="qa-icon">⇧</span><strong>Importer mon CV</strong><small>PDF, DOCX ou TXT</small>
+      </label>
+      <button class="qa-card" id="newCvBtn"><span class="qa-icon">＋</span><strong>Nouveau CV</strong><small>Partir de zéro</small></button>
+    </section>
+    <div id="importStatus" class="status-line"></div>
+
+    <div class="steps" role="tablist">
       <button class="step active" data-step="1"><span>1</span>Identité</button>
       <button class="step" data-step="2"><span>2</span>Profil</button>
       <button class="step" data-step="3"><span>3</span>Expériences</button>
       <button class="step" data-step="4"><span>4</span>Formation</button>
       <button class="step" data-step="5"><span>5</span>Compétences</button>
+      <button class="step" data-step="6"><span>6</span>Design & IA</button>
     </div>
 
     <section class="panel">
       <div class="step-panel active" data-panel="1">
         <h2>Informations personnelles</h2>
-        <p class="muted">Les informations visibles en haut du CV.</p>
-        <div class="grid2">
-          <label>Prénom<input id="firstName" autocomplete="given-name"></label>
-          <label>Nom<input id="lastName" autocomplete="family-name"></label>
-        </div>
-        <label>Titre professionnel<input id="professionalTitle" placeholder="Ex. Développeur Front-End"></label>
-        <div class="grid2">
-          <label>Email<input id="email" type="email" autocomplete="email"></label>
-          <label>Téléphone<input id="phone" type="tel" autocomplete="tel"></label>
-        </div>
-        <label>Ville<input id="city" autocomplete="address-level2"></label>
+        <div class="grid2"><label>Prénom<input id="firstName"></label><label>Nom<input id="lastName"></label></div>
+        <label>Titre professionnel<input id="professionalTitle" placeholder="Ex. Développeur Web Full Stack"></label>
+        <div class="grid2"><label>Email<input id="email" type="email"></label><label>Téléphone<input id="phone"></label></div>
+        <label>Ville<input id="city"></label>
         <label>LinkedIn<input id="linkedin" placeholder="linkedin.com/in/..."></label>
         <label>GitHub<input id="github" placeholder="github.com/..."></label>
         <label>Portfolio<input id="portfolio" placeholder="https://..."></label>
       </div>
 
       <div class="step-panel" data-panel="2">
-        <h2>Profil professionnel</h2>
-        <p class="muted">Présentez votre valeur en quelques lignes.</p>
-        <label>Résumé<textarea id="summary" rows="9" maxlength="1200" placeholder="Décrivez votre profil, vos points forts et votre objectif..."></textarea></label>
-        <div class="counter"><span id="summaryCount">0</span>/1200</div>
+        <div class="panel-head"><div><h2>Profil professionnel</h2><p class="muted">Un résumé court et impactant.</p></div><button class="ai-mini" data-ai="summary">✨ Optimiser avec l’IA</button></div>
+        <label>Résumé<textarea id="summary" rows="10" maxlength="1600"></textarea></label>
+        <div class="counter"><span id="summaryCount">0</span>/1600</div>
       </div>
 
       <div class="step-panel" data-panel="3">
-        <div class="panel-head">
-          <div><h2>Expériences</h2><p class="muted">Ajoutez les expériences les plus pertinentes.</p></div>
-          <button class="mini-btn" id="addExperience">+ Ajouter</button>
-        </div>
+        <div class="panel-head"><div><h2>Expériences</h2><p class="muted">Missions, résultats et responsabilités.</p></div><button class="mini-btn" id="addExperience">+ Ajouter</button></div>
         <div id="experiences"></div>
+        <button class="ai-wide" data-ai="experiences">✨ Améliorer mes expériences avec l’IA</button>
       </div>
 
       <div class="step-panel" data-panel="4">
-        <div class="panel-head">
-          <div><h2>Formation</h2><p class="muted">Diplômes, certifications et parcours.</p></div>
-          <button class="mini-btn" id="addEducation">+ Ajouter</button>
-        </div>
+        <div class="panel-head"><div><h2>Formation</h2><p class="muted">Diplômes et certifications.</p></div><button class="mini-btn" id="addEducation">+ Ajouter</button></div>
         <div id="educations"></div>
       </div>
 
       <div class="step-panel" data-panel="5">
-        <div class="panel-head">
-          <div><h2>Compétences & langues</h2><p class="muted">Mettez en avant vos points forts.</p></div>
+        <h2>Compétences & langues</h2>
+        <h3>Compétences</h3><div id="skills"></div><button class="mini-btn" id="addSkill">+ Ajouter</button>
+        <h3 class="mt">Langues</h3><div id="languages"></div><button class="mini-btn" id="addLanguage">+ Ajouter</button>
+      </div>
+
+      <div class="step-panel" data-panel="6">
+        <h2>Design & intelligence artificielle</h2>
+        <p class="muted">Choisissez un modèle et personnalisez la couleur principale.</p>
+        <h3>Style du CV</h3>
+        <div class="template-grid">
+          <button data-template="classic" class="template-card active"><b>Classique</b><span>Sobre et ATS</span></button>
+          <button data-template="modern" class="template-card"><b>Moderne</b><span>En-tête contrasté</span></button>
+          <button data-template="elegant" class="template-card"><b>Élégant</b><span>Typographie raffinée</span></button>
+          <button data-template="minimal" class="template-card"><b>Minimaliste</b><span>Très épuré</span></button>
+          <button data-template="creative" class="template-card"><b>Créatif</b><span>Plus visuel</span></button>
+        </div>
+        <h3 class="mt">Couleur principale</h3>
+        <div class="color-grid" id="colorGrid">
+          <button data-color="#2563eb" style="--c:#2563eb" aria-label="Bleu"></button>
+          <button data-color="#0f766e" style="--c:#0f766e" aria-label="Vert"></button>
+          <button data-color="#7c3aed" style="--c:#7c3aed" aria-label="Violet"></button>
+          <button data-color="#be123c" style="--c:#be123c" aria-label="Rouge"></button>
+          <button data-color="#c2410c" style="--c:#c2410c" aria-label="Orange"></button>
+          <button data-color="#111827" style="--c:#111827" aria-label="Noir"></button>
+          <label class="custom-color">+<input id="customColor" type="color" value="#2563eb"></label>
         </div>
 
-        <h3>Compétences</h3>
-        <div id="skills"></div>
-        <button class="mini-btn" id="addSkill">+ Ajouter une compétence</button>
-
-        <h3 class="mt">Langues</h3>
-        <div id="languages"></div>
-        <button class="mini-btn" id="addLanguage">+ Ajouter une langue</button>
-
-        <h3 class="mt">Modèle</h3>
-        <div class="template-switch">
-          <button data-template="classic" class="active">Classique</button>
-          <button data-template="modern">Moderne</button>
+        <div class="ai-box">
+          <p class="eyebrow">ASSISTANT IA</p>
+          <h3>Adapter mon CV à une offre</h3>
+          <label>Collez l’offre d’emploi<textarea id="jobOffer" rows="7" placeholder="Collez ici le texte de l’annonce..."></textarea></label>
+          <div class="ai-actions">
+            <button class="btn primary" data-ai="adapt">✨ Adapter le CV</button>
+            <button class="btn ghost" data-ai="ats">Analyser les mots-clés ATS</button>
+          </div>
+          <p class="ai-note">L’IA propose des améliorations sans inventer d’expérience ou de diplôme.</p>
         </div>
       </div>
 
-      <div class="bottom-actions">
-        <button class="btn ghost" id="prevBtn">Retour</button>
-        <button class="btn primary" id="nextBtn">Continuer</button>
-      </div>
+      <div class="bottom-actions"><button class="btn ghost" id="prevBtn">Retour</button><button class="btn primary" id="nextBtn">Continuer</button></div>
     </section>
-
-    <p class="privacy-note">Vos données restent dans votre navigateur dans cette V1. Elles ne sont pas envoyées à un serveur.</p>
   </aside>
 
-  <section class="preview-area" aria-label="Aperçu du CV">
-    <div class="preview-toolbar">
-      <span>Aperçu A4</span>
-      <button id="resetBtn" class="link-btn">Nouveau CV</button>
-    </div>
-
+  <section class="preview-area">
+    <div class="preview-toolbar"><span>Aperçu A4</span><span id="designLabel">Classique • Bleu</span></div>
     <article class="resume classic" id="resume">
-      <header class="resume-header">
-        <h2 id="rName">Votre nom</h2>
-        <p class="job-title" id="rTitle">Votre titre professionnel</p>
-        <p class="contact-line" id="rContact">email • téléphone • ville</p>
-        <p class="link-line" id="rLinks"></p>
-      </header>
-
-      <section class="resume-section" id="summarySection" hidden>
-        <h3>Profil</h3>
-        <p id="rSummary"></p>
-      </section>
-
-      <section class="resume-section" id="experienceSection" hidden>
-        <h3>Expériences</h3>
-        <div id="rExperiences"></div>
-      </section>
-
-      <section class="resume-section" id="educationSection" hidden>
-        <h3>Formation</h3>
-        <div id="rEducations"></div>
-      </section>
-
-      <div class="resume-columns">
-        <section class="resume-section">
-          <h3>Compétences</h3>
-          <div class="tags" id="rSkills"></div>
-        </section>
-        <section class="resume-section">
-          <h3>Langues</h3>
-          <div id="rLanguages"></div>
-        </section>
-      </div>
+      <header class="resume-header"><h2 id="rName">Votre nom</h2><p class="job-title" id="rTitle">Votre titre professionnel</p><p class="contact-line" id="rContact">email • téléphone • ville</p><p class="link-line" id="rLinks"></p></header>
+      <section class="resume-section" id="summarySection" hidden><h3>Profil</h3><p id="rSummary"></p></section>
+      <section class="resume-section" id="experienceSection" hidden><h3>Expériences</h3><div id="rExperiences"></div></section>
+      <section class="resume-section" id="educationSection" hidden><h3>Formation</h3><div id="rEducations"></div></section>
+      <div class="resume-columns"><section class="resume-section"><h3>Compétences</h3><div class="tags" id="rSkills"></div></section><section class="resume-section"><h3>Langues</h3><div id="rLanguages"></div></section></div>
     </article>
   </section>
 </main>
 
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-<script src="cv-builder.js"></script>
+<div class="modal" id="aiModal" hidden><div class="modal-card"><button class="modal-close" id="aiClose">×</button><p class="eyebrow">KABAKARO IA</p><h2 id="aiTitle">Analyse en cours</h2><div id="aiBody" class="ai-result">Préparation…</div><div class="modal-actions"><button class="btn ghost" id="aiCancel">Fermer</button><button class="btn primary" id="aiApply" hidden>Appliquer les suggestions</button></div></div></div>
+<div class="toast" id="toast"></div>
+<script src="cv-builder-v2.js"></script>
 </body>
 </html>
