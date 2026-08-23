@@ -1,0 +1,32 @@
+FIX IMPORT PDF + IA — Kabakaro Dev
+
+1) Ajouter à la racine du dépôt :
+   cv-builder-v2-hotfix.js
+
+2) Remplacer :
+   api/cv-ai.js
+
+3) Dans creer-mon-cv.html, juste APRÈS :
+   <script src="cv-builder-v2.js"></script>
+
+   ajouter :
+   <script src="cv-builder-v2-hotfix.js"></script>
+
+4) Commit changes.
+
+5) Dans Vercel :
+   Settings > Environment Variables
+   vérifier qu'une variable OPENAI_API_KEY existe.
+
+6) Si la clé vient d'être ajoutée/modifiée :
+   redéployer le projet.
+
+Le hotfix corrige notamment :
+- erreur iPhone/Safari pendant la lecture PDF
+- URL de l'API construite proprement
+- timeout IA
+- fenêtre IA qui restait bloquée
+- messages d'erreur explicites
+- import PDF/DOCX/TXT plus robuste
+
+Le modèle gpt-5.6-luna est bien un modèle API valide actuellement.
