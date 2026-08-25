@@ -1,46 +1,16 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
-    {
-      "source": "/api/google-calendar/auth",
-      "destination": "/api/google-calendar-auth"
-    },
-    {
-      "source": "/api/google-calendar/callback",
-      "destination": "/api/google-calendar-callback"
-    },
-    {
-      "source": "/api/auth/register",
-      "destination": "/api/gateway?route=auth-register"
-    },
-    {
-      "source": "/api/auth/login",
-      "destination": "/api/gateway?route=auth-login"
-    },
-    {
-      "source": "/api/auth/me",
-      "destination": "/api/gateway?route=auth-me"
-    },
-    {
-      "source": "/api/cv",
-      "destination": "/api/gateway?route=cv-list"
-    },
-    {
-      "source": "/api/cv/duplicate",
-      "destination": "/api/gateway?route=cv-duplicate"
-    },
-    {
-      "source": "/api/cv/:id",
-      "destination": "/api/gateway?route=cv-item&id=:id"
-    },
-    {
-      "source": "/api/views",
-      "destination": "/api/gateway?route=views"
-    }
+    {"source":"/api/google-calendar/auth","destination":"/api/google-calendar-auth"},
+    {"source":"/api/google-calendar/callback","destination":"/api/google-calendar-callback"},
+    {"source":"/api/cv-ai","destination":"/api/google-calendar-auth?route=cv-ai"},
+    {"source":"/api/auth/register","destination":"/api/gateway?route=auth-register"},
+    {"source":"/api/auth/login","destination":"/api/gateway?route=auth-login"},
+    {"source":"/api/auth/me","destination":"/api/gateway?route=auth-me"},
+    {"source":"/api/cv","destination":"/api/gateway?route=cv-list"},
+    {"source":"/api/cv/duplicate","destination":"/api/gateway?route=cv-duplicate"},
+    {"source":"/api/cv/:id","destination":"/api/gateway?route=cv-item&id=:id"},
+    {"source":"/api/views","destination":"/api/gateway?route=views"}
   ],
-  "functions": {
-    "api/*.js": {
-      "maxDuration": 10
-    }
-  }
+  "functions": {"api/*.js":{"maxDuration":10}}
 }
